@@ -20,6 +20,7 @@ private:
   private:
     T data;     ///< Value stored in the node.
     Node *next; ///< Pointer to the next node.
+
   public:
     /**
      * @brief Default constructor. Initializes data and next pointer.
@@ -44,8 +45,17 @@ private:
      */
     void setNext(Node *n) { next = n; }
 
-    T getData() const { return data; } // <- getter para recibir el valor
-    T &getData() { return data; }      // <- getter para modificar
+    /**
+     * @brief Get the data stored in the node.
+     * @return The data stored in the node.
+     */
+    T getData() const { return data; }
+
+    /**
+     * @brief Get a reference to the data stored in the node.
+     * @return Reference to the data stored in the node.
+     */
+    T &getData() { return data; }
   };
 
 private:
@@ -53,6 +63,10 @@ private:
   Node *last;      ///< Pointer to the last node in the list.
   unsigned int sz; ///< Number of elements in the list.
 
+  /**
+   * @brief Free all nodes starting from a given node.
+   * @param node Pointer to the starting node.
+   */
   void freeNodes(Node *node)
   {
     while (node != nullptr)
@@ -113,357 +127,348 @@ public:
   void pop_back()
   {
     if (!empty())
-    { // Verifica si la lista no está vacía
+    {
       if (first == last)
-      { // Caso especial: solo un nodo en la lista
+      {
         delete first;
         first = last = nullptr;
       }
       else
       {
         Node *temp = first;
-        // Recorre hasta el penúltimo nodo
         while (temp->getNext() != last)
         {
           temp = temp->getNext();
         }
-        delete last;            // Elimina el último nodo
-        last = temp;            // Actualiza last al penúltimo nodo
-        last->setNext(nullptr); // Asegúrate de que el nuevo último nodo no apunte a nada
+        delete last;
+        last = temp;
+        last->setNext(nullptr);
       }
-      sz--; // Decrementa el tamaño de la lista
+      sz--;
     }
   }
 
-    /**
-     * @brief Add an element to the beginning of the list.
-     * @param val Value to add.
-     */
-    void push_front(const T &val)
+  /**
+   * @brief Add an element to the beginning of the list.
+   * @param val Value to add.
+   */
+  void push_front(const T &val)
+  {
+    Node *newNode = new Node(val);
+    if (!empty())
+    {
+      newNode->setNext(first);
+    }
+    else
+    {
+      last = newNode;
+    }
+    first = newNode;
+    sz++;
+  }
+
+  /**
+   * @brief Remove the first element from the list.
+   *
+   * @note If the list is empty, this function does nothing.
+   */
+  void pop_front()
+  {
+    if (!empty())
+    {
+      if (first == last)
+      {
+        delete first;
+        first = last = nullptr;
+      }
+      else
+      {
+        Node *temp = first->getNext();
+        delete first;
+        first = temp;
+      }
+      sz--;
+    }
+  }
+
+  /**
+   * @brief Get the first element in the list.
+   * @return Reference to the first element.
+   * @throws std::out_of_range if the list is empty.
+   */
+  T &front()
+  {
+    if (empty())
+    {
+      throw std::out_of_range("List is empty");
+    }
+    return first->getData();
+  }
+
+  /**
+   * @brief Get the first element in the list (const version).
+   * @return Const reference to the first element.
+   * @throws std::out_of_range if the list is empty.
+   */
+  const T &front() const
+  {
+    if (empty())
+    {
+      throw std::out_of_range("List is empty");
+    }
+    return first->getData();
+  }
+
+  /**
+   * @brief Get the last element in the list.
+   * @return Reference to the last element.
+   * @throws std::out_of_range if the list is empty.
+   */
+  T &back()
+  {
+    if (empty())
+    {
+      throw out_of_range("list is empty");
+    }
+    return last->getData();
+  }
+
+  /**
+   * @brief Get the last element in the list (const version).
+   * @return Const reference to the last element.
+   * @throws std::out_of_range if the list is empty.
+   */
+  const T &back() const
+  {
+    if (empty())
+    {
+      throw out_of_range("list is empty");
+    }
+    return last->getData();
+  }
+
+  /**
+   * @brief Get the number of elements in the list.
+   * @return The size of the list.
+   */
+  unsigned int size() const { return sz; }
+
+  /**
+   * @brief Remove all elements from the list.
+   */
+  void clear()
+  {
+    freeNodes(first);
+    first = last = nullptr;
+    sz = 0;
+  }
+
+  /**
+   * @brief Get the element at a specific index (const version).
+   * @param index Index of the element to retrieve.
+   * @return Const reference to the element at the specified index.
+   * @throws std::out_of_range if the index is out of bounds.
+   */
+  const T &at(unsigned int index) const
+  {
+    if (index >= sz)
+    {
+      throw out_of_range("Index out of range");
+    }
+    Node *current = first;
+    for (unsigned int i = 0; i < index; i++)
+    {
+      current = current->getNext();
+    }
+    return current->getData();
+  }
+
+  /**
+   * @brief Get the element at a specific index.
+   * @param index Index of the element to retrieve.
+   * @return Reference to the element at the specified index.
+   * @throws std::out_of_range if the index is out of bounds.
+   */
+  T &at(unsigned int index)
+  {
+    if (index >= sz)
+    {
+      throw out_of_range("Index out of range");
+    }
+    Node *current = first;
+    for (unsigned int i = 0; i < index; i++)
+    {
+      current = current->getNext();
+    }
+    return current->getData();
+  }
+
+  /**
+   * @brief Access an element using the subscript operator (const version).
+   * @param index Index of the element to access.
+   * @return Const reference to the element at the specified index.
+   */
+  const T &operator[](unsigned int index) const { return at(index); }
+
+  /**
+   * @brief Access an element using the subscript operator.
+   * @param index Index of the element to access.
+   * @return Reference to the element at the specified index.
+   */
+  T &operator[](unsigned int index) { return at(index); }
+
+  /**
+   * @brief Insert an element at a specific index.
+   * @param index Index where the element will be inserted.
+   * @param val Value to insert.
+   * @throws std::out_of_range if the index is out of bounds.
+   */
+  void insert(unsigned int index, const T &val)
+  {
+    if (index > sz)
+    {
+      throw out_of_range("Index out of range");
+    }
+    if (index == 0)
+    {
+      push_front(val);
+    }
+    else if (index == sz)
+    {
+      push_back(val);
+    }
+    else
     {
       Node *newNode = new Node(val);
-      if (!empty())
-      {
-        newNode->setNext(first);
-      }
-      else
-      {
-        last = newNode;
-      }
-      first = newNode;
-      sz++;
-    }
-
-    /**
-     * @brief Remove the first element from the list.
-     *
-     * @note If the list is empty, this function does nothing.
-     */
-    void pop_front()
-    {
-      if (!empty())
-      {
-        if (first == last)
-        {
-          delete first;
-          first = last = nullptr;
-        }
-        else
-        {
-          Node *temp = first->getNext();
-          delete first;
-          first = temp;
-        }
-        sz--;
-      }
-    }
-
-    /**
-     * @brief Get the first element in the list.
-     * @return Reference to the first element.
-     * @throws std::out_of_range if the list is empty.
-     */
-    T &front()
-    {
-      if (empty())
-      {
-        throw std::out_of_range("List is empty");
-      }
-      return first->getData();
-    }
-
-    /**
-     * @brief Get the first element in the list (const version).
-     * @return Const reference to the first element.
-     * @throws std::out_of_range if the list is empty.
-     */
-    const T &front() const
-    {
-      if (empty())
-      {
-        throw std::out_of_range("List is empty");
-      }
-      return first->getData();
-    }
-
-    /**
-     * @brief Get the last element in the list.
-     * @return Reference to the last element.
-     * @throws std::out_of_range if the list is empty.
-     */
-    T &back()
-    {
-      if (empty())
-      {
-        throw out_of_range("list is empty");
-      }
-      return last->getData();
-    }
-
-    /**
-     * @brief Get the last element in the list (const version).
-     * @return Const reference to the last element.
-     * @throws std::out_of_range if the list is empty.
-     */
-    const T &back() const
-    {
-      if (empty())
-      {
-        throw out_of_range("list is empty");
-      }
-      return last->getData();
-    }
-
-    /**
-     * @brief Get the number of elements in the list.
-     * @return The size of the list.
-     */
-    unsigned int size() const { return sz; }
-
-    /**
-     * @brief Remove all elements from the list.
-     */
-    void clear()
-    {
-      freeNodes(first); // Reutiliza la función freenodes en la linea 53 para liberar nodos
-      first = last = nullptr;
-      sz = 0;
-    }
-
-    /**
-     * @brief Get the element at a specific index (const version).
-     * @param index Index of the element to retrieve.
-     * @return Const reference to the element at the specified index.
-     * @throws std::out_of_range if the index is out of bounds.
-     */
-    const T &at(unsigned int index) const
-    {
-      if (index >= sz)
-      {
-        throw out_of_range("Index out of range");
-      }
-      Node *current = first;
-      for (unsigned int i = 0; i < index; i++)
-      {
-        current = current->getNext();
-      }
-      return current->getData();
-    }
-
-    /**
-     * @brief Get the element at a specific index.
-     * @param index Index of the element to retrieve.
-     * @return Reference to the element at the specified index.
-     * @throws std::out_of_range if the index is out of bounds.
-     */
-    T &at(unsigned int index)
-    {
-      if (index >= sz)
-      {
-        throw out_of_range("Index out of range");
-      }
-      Node *current = first;
-      for (unsigned int i = 0; i < index; i++)
-      {
-        current = current->getNext();
-      }
-      return current->getData();
-    }
-
-    /**
-     * @brief Access an element using the subscript operator (const version).
-     * @param index Index of the element to access.
-     * @return Const reference to the element at the specified index.
-     */
-    const T &operator[](unsigned int index) const { return at(index); }
-
-    /**
-     * @brief Access an element using the subscript operator.
-     * @param index Index of the element to access.
-     * @return Reference to the element at the specified index.
-     */
-    T &operator[](unsigned int index) { return at(index); }
-
-    /**
-     * @brief Insert an element at a specific index.
-     * @param index Index where the element will be inserted.
-     * @param val Value to insert.
-     * @throws std::out_of_range if the index is out of bounds.
-     */
-    void insert(unsigned int index, const T &val)
-    {
-      if (index > sz)
-      {
-        throw out_of_range("Index out of range");
-      }
-      if (index == 0)
-      {
-        push_front(val);
-      }
-      else if (index == sz)
-      {
-        push_back(val);
-      }
-      else
-      {
-        Node *newNode = new Node(val);
-        Node *current = first;
-        for (unsigned int i = 0; i < index - 1; i++)
-        {
-          current = current->getNext();
-        }
-        newNode->setNext(current->getNext());
-        current->setNext(newNode);
-        sz++;
-      }
-    }
-
-    /**
-     * @brief Remove an element at a specific index.
-     * @param index Index of the element to remove.
-     * @throws std::out_of_range if the index is out of bounds.
-     */
-
-    void erase(unsigned int index)
-    {
-      if (index >= sz)
-      {
-        throw out_of_range("index out of range");
-      }
-      if (index == 0)
-      {
-        pop_front();
-        return;
-      }
-      else if (index == sz - 1)
-      {
-        pop_back();
-        return;
-      }
       Node *current = first;
       for (unsigned int i = 0; i < index - 1; i++)
       {
         current = current->getNext();
       }
-      Node *temp = current->getNext();
-      current->setNext(temp->getNext());
-      delete temp;
-      sz--;
+      newNode->setNext(current->getNext());
+      current->setNext(newNode);
+      sz++;
     }
+  }
 
-    /**
-     * @brief Print the elements of the list.
-     */
-    void print() const
+  /**
+   * @brief Remove an element at a specific index.
+   * @param index Index of the element to remove.
+   * @throws std::out_of_range if the index is out of bounds.
+   */
+  void erase(unsigned int index)
+  {
+    if (index >= sz)
     {
-      Node *temp = first;
-      while (temp != nullptr)
-      {
-        cout << temp->getData() << " ";
-        temp = temp->getNext();
-      }
-      cout << endl;
+      throw out_of_range("index out of range");
     }
-
-    /**
-     * @brief Reverse the order of elements in the list.
-     */
-    void reverse()
+    if (index == 0)
     {
-      if (empty() || first == last)
-      {
-        return; // No need to reverse if the list is empty or has only one element
-      }
-      Node *prev = nullptr;
-      Node *current = first;
-      Node *next = nullptr;
-      last = first; // Update last to point to the original first node
-      while (current != nullptr)
-      {
-        next = current->getNext();
-        current->setNext(prev);
-        prev = current;
-        current = next;
-      }
-      first = prev;
+      pop_front();
+      return;
     }
-
-    /**
-     * @brief Copy constructor. Creates a deep copy of another list.
-     * @param other List to copy.
-     */
-
-    List(const List &other)
+    else if (index == sz - 1)
     {
-      first = last = nullptr;
-      sz = 0;
-      // Recorre la lista "other" y agrega cada elemento a esta lista
-      Node *current = other.first;
-
-      while (current != nullptr)
-      {
-        push_back(current->getData());
-        // Avanza al siguiente nodo
-        current = current->getNext();
-      }
+      pop_back();
+      return;
     }
-
-    /**
-     * @brief Append the elements of another list to the end of this list.
-     * @param other List whose elements will be appended.
-     */
-    void push_back(const List &other)
+    Node *current = first;
+    for (unsigned int i = 0; i < index - 1; i++)
     {
-      Node *current = other.first;
-
-      while (current != nullptr)
-      {
-        push_back(current->getData());
-        current = current->getNext();
-      }
+      current = current->getNext();
     }
+    Node *temp = current->getNext();
+    current->setNext(temp->getNext());
+    delete temp;
+    sz--;
+  }
 
-    /**
-     * @brief Prepend the elements of another list to the beginning of this list.
-     * @param other List whose elements will be prepended.
-     */
-    void push_front(const List &other)
+  /**
+   * @brief Print the elements of the list.
+   */
+  void print() const
+  {
+    Node *temp = first;
+    while (temp != nullptr)
     {
-      List<T> templist(other); // Lista temporal para almacenar los elementos en orden inverso
-      templist.reverse();
-
-      for(Node* current = templist.first; current != nullptr; current = current->getNext()){
-        push_front(current->getData());
-      }
+      cout << temp->getData() << " ";
+      temp = temp->getNext();
     }
-  };
+    cout << endl;
+  }
 
+  /**
+   * @brief Reverse the order of elements in the list.
+   */
+  void reverse()
+  {
+    if (empty() || first == last)
+    {
+      return;
+    }
+    Node *prev = nullptr;
+    Node *current = first;
+    Node *next = nullptr;
+    last = first;
+    while (current != nullptr)
+    {
+      next = current->getNext();
+      current->setNext(prev);
+      prev = current;
+      current = next;
+    }
+    first = prev;
+  }
+
+  /**
+   * @brief Copy constructor. Creates a deep copy of another list.
+   * @param other List to copy.
+   */
+  List(const List &other)
+  {
+    first = last = nullptr;
+    sz = 0;
+    Node *current = other.first;
+    while (current != nullptr)
+    {
+      push_back(current->getData());
+      current = current->getNext();
+    }
+  }
+
+  /**
+   * @brief Append the elements of another list to the end of this list.
+   * @param other List whose elements will be appended.
+   */
+  void push_back(const List &other)
+  {
+    Node *current = other.first;
+    while (current != nullptr)
+    {
+      push_back(current->getData());
+      current = current->getNext();
+    }
+  }
+
+  /**
+   * @brief Prepend the elements of another list to the beginning of this list.
+   * @param other List whose elements will be prepended.
+   */
+  void push_front(const List &other)
+  {
+    List<T> templist(other);
+    templist.reverse();
+    for (Node *current = templist.first; current != nullptr; current = current->getNext())
+    {
+      push_front(current->getData());
+    }
+  }
+};
 
 /**
  * @brief Example usage of the List class.
  */
-int
-main()
+int main()
 {
   List<int> lista;
   List<int> copylist;
@@ -476,22 +481,21 @@ main()
   lista.push_back(40);
   lista.push_front(5);
   lista.push_front(6);
-  lista.erase(3);      // Eliminar el elemento en el índice 3
-   lista.insert(2, 15); // Insertar 15 en el índice 2
+  lista.erase(3);
+  lista.insert(2, 15);
   lista.reverse();
- 
-  List<int> copia(lista); // Usar el constructor de copia
-  cout << "Copia de la lista original: ";
-  copia.print(); // esperado: 40 23 20 15 10 6 5
-  copia.push_back(100); // Modificar la copia para verificar que es independiente
-  cout << "Copia modificada de la lista original: ";
 
-  copia.print(); // esperado: 40 23 20 15 10 6 5
-  cout << "elemento en el índice 2: " << lista.at(2) << endl; // esperado: 20
-  cout << "Tamaño de la lista: " << lista.size() << endl;     // esperado: 3
-  cout << "Primer elemento: " << lista.front() << endl;       // esperado: 5
+  List<int> copia(lista);
+  cout << "Copia de la lista original: ";
+  copia.print();
+  copia.push_back(100);
+  cout << "Copia modificada de la lista original: ";
+  copia.print();
+  cout << "elemento en el índice 2: " << lista.at(2) << endl;
+  cout << "Tamaño de la lista: " << lista.size() << endl;
+  cout << "Primer elemento: " << lista.front() << endl;
   cout << "Contenido de la lista: ";
-  lista.print(); // esperado: 5 10
+  lista.print();
 
   cout << "copylist: ";
   copylist.print();
