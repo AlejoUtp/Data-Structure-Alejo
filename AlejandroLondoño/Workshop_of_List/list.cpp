@@ -228,7 +228,7 @@ public:
   {
     if (empty())
     {
-      throw out_of_range("list is empty");
+      throw std::out_of_range("list is empty");
     }
     return last->getData();
   }
@@ -242,7 +242,7 @@ public:
   {
     if (empty())
     {
-      throw out_of_range("list is empty");
+      throw std::out_of_range("list is empty");
     }
     return last->getData();
   }
@@ -456,10 +456,11 @@ public:
    */
   void push_front(const List<T> &other)
   {
-    List *templist = new List(other); 
+    List *templist = new List(other);
     templist->last->setNext(first);
     first = templist->first;
-    if (last == nullptr) {
+    if (last == nullptr)
+    {
       last = templist->last;
     }
     sz += templist->sz;

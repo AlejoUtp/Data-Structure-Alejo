@@ -4,7 +4,7 @@
 using namespace std;
 
 /**
- * @brief A simple singly-linked list implementation.
+ * @brief A doubly-linked list implementation.
  *
  * @tparam T Type of elements stored in the list.
  */
@@ -13,17 +13,18 @@ class DoubleLinkedList
 {
 private:
   /**
-   * @brief Node class representing an element in the list.
+   * @brief Node class representing an element in the doubly-linked list.
    */
   class Node
   {
   private:
     T data;     ///< Value stored in the node.
     Node *next; ///< Pointer to the next node.
-    Nodo *prev; ///< Pointer to the previous node.
+    Node *prev; ///< Pointer to the previous node.
+
   public:
     /**
-     * @brief Default constructor. Initializes data and next pointer.
+     * @brief Default constructor. Initializes data, next, and prev pointers.
      */
     Node() : data(), next(nullptr), prev(nullptr) {}
 
@@ -75,6 +76,10 @@ private:
   Node *last;      ///< Pointer to the last node in the list.
   unsigned int sz; ///< Number of elements in the list.
 
+  /**
+   * @brief Free all nodes starting from a given node.
+   * @param node Pointer to the starting node.
+   */
   void freeNodes(Node *node)
   {
     while (node != nullptr)
@@ -83,146 +88,527 @@ private:
       delete node;
       node = temp;
     }
+  }
 
-  public:
-    /**
-     * @brief Default constructor. Initializes an empty list.
-     */
-    DoubleLinkedList() : first(nullptr), last(nullptr), sz(0) {}
-
-    /**
-     * @brief Destructor. Deletes all nodes in the list.
-     */
-    ~DoubleLinkedList()
-    {
-      freeNodes(first);
-    }
-
-    /**
-     * @brief Check if the list is empty.
-     * @return true if the list is empty, false otherwise.
-     */
-    bool empty() const
-    {
-      return first == nullptr && last == nullptr;
-    }
-
-    /**
-     * @brief Add an element to the end of the list.
-     * @param val Value to add.
-     */
-    void push_back(const T &val)
-    {
-      Node *newNode = new Node(val);
-      if (empty())
-      {
-        last = first = nullptr;
-      }
-      else
-      {
-        last->setNext(newNode);
-        newNode->setPrev(last);
-        last = newNode;
-      }
-      sz++;
-    }
-
-    void pop_back()
-    {
-      /** your implementation here */
-    }
-    void push_front(const T &val)
-    {
-      /** your implementation here */
-    }
-    void pop_front()
-    {
-      /** your implementation here */
-    }
-    T &front()
-    {
-      /** your implementation here */
-    }
-    const T &front() const
-    {
-      /** your implementation here */
-    }
-    T &back()
-    {
-      /** your implementation here */
-    }
-    const T &back() const
-    {
-      /** your implementation here */
-    }
-    unsigned int size() const
-    {
-      /** your implementation here */
-    }
-    void clear()
-    {
-      /** your implementation here */
-    }
-    const T &at(unsigned int index) const
-    {
-      /** your implementation here */
-    }
-    T &at(unsigned int index)
-    {
-      /** your implementation here */
-    }
-    const T &operator[](unsigned int index) const
-    {
-      /** your implementation here */
-    }
-    T &operator[](unsigned int index)
-    {
-      /** your implementation here */
-    }
-    void insert(unsigned int index, const T &val)
-    {
-      /** your implementation here */
-    }
-    void erase(unsigned int index)
-    {
-      /** your implementation here */
-    }
-    void print() const
-    {
-      Node *temp = first;
-      while (temp != nullptr)
-      {
-        cout << temp->data << " ";
-        temp = temp->getNext();
-      }
-      cout << endl;
-    }
-    void reverse()
-    {
-      /** your implementation here */
-    }
-    List(const List &other)
-    {
-      /** your implementation here */
-    }
-    void push_back(const List &other)
-    {
-      /** your implementation here */
-    }
-    void push_front(const List &other)
-    {
-      /** your implementation here */
-    }
-  };
+public:
+  /**
+   * @brief Default constructor. Initializes an empty list.
+   */
+  DoubleLinkedList() : first(nullptr), last(nullptr), sz(0) {}
 
   /**
-   * @brief Example usage of the List class.
+   * @brief Destructor. Deletes all nodes in the list.
    */
-  int main()
+  ~DoubleLinkedList()
   {
-    List<int> l;
-    l.push_back(10);
-    l.push_back(20);
-    l.push_back(30);
-    return 0;
+    freeNodes(first);
   }
+
+  /**
+   * @brief Check if the list is empty.
+   * @return true if the list is empty, false otherwise.
+   */
+  bool empty() const
+  {
+    return first == nullptr && last == nullptr;
+  }
+
+  /**
+   * @brief Add an element to the end of the list.
+   * @param val Value to add.
+   */
+  void push_back(const T &val)
+  {
+    Node *newNode = new Node(val);
+    if (empty())
+    {
+      last = first = newNode;
+    }
+    else
+    {
+      last->setNext(newNode);
+      newNode->setPrev(last);
+      last = newNode;
+    }
+    sz++;
+  }
+
+  /**
+   * @brief Remove the last element from the list.
+   *
+   * This function removes the last node from the list. If the list has
+   * only one node, it handles the special case by setting both `first`
+   * and `last` to `nullptr`. If the list is empty, it does nothing.
+   */
+  void pop_back()
+  {
+    if (empty())
+      throw std::out_of_range("list is empty");
+
+    Node *temp = last;
+    last = last->getPrev();
+
+    if (last != nullptr)
+    {
+      last->setNext(nullptr);
+    }
+    else
+    {
+      first = nullptr;
+    }
+    delete temp;
+    sz--;
+  }
+
+  /**
+   * @brief Add an element to the beginning of the list.
+   * @param val Value to add.
+   */
+  void push_front(const T &val)
+  {
+    Node *newNode = new Node(val);
+
+    if (empty())
+    {
+      first = last = newNode;
+    }
+    else
+    {
+      newNode->setNext(first);
+      first->setPrev(newNode);
+      first = newNode;
+    }
+    sz++;
+  }
+
+  /**
+   * @brief Remove the first element from the list.
+   *
+   * This function removes the first node from the list. If the list has
+   * only one node, it handles the special case by setting both `first`
+   * and `last` to `nullptr`. If the list is empty, it does nothing.
+   */
+  void pop_front()
+  {
+    if (empty())
+      throw std::out_of_range("list is empty");
+
+    Node *temp = first;
+    first = first->getNext();
+
+    if (first != nullptr)
+    {
+      first->setPrev(nullptr);
+    }
+    else
+    {
+      last = nullptr;
+    }
+
+    delete temp;
+    sz--;
+  }
+
+  /**
+   * @brief Get the first element in the list.
+   *
+   * This function returns a reference to the data stored in the first node.
+   *
+   * @return Reference to the first element.
+   * @throws std::out_of_range if the list is empty.
+   */
+  T &front()
+  {
+    if (empty())
+    {
+      throw std::out_of_range("DoubleLinkedList Is Empty");
+    }
+    return first->getData();
+  }
+
+  /**
+   * @brief Get the first element in the list (const version).
+   *
+   * This function returns a const reference to the data stored in the first node.
+   *
+   * @return Const reference to the first element.
+   * @throws std::out_of_range if the list is empty.
+   */
+  const T &front() const
+  {
+    if (empty())
+    {
+      throw std::out_of_range("DoubleLinkedList Is Empty");
+    }
+    return first->getData();
+  }
+
+  /**
+   * @brief Get the last element in the list.
+   *
+   * This function returns a reference to the data stored in the last node.
+   *
+   * @return Reference to the last element.
+   * @throws std::out_of_range if the list is empty.
+   */
+  T &back()
+  {
+    if (empty())
+    {
+      throw std::out_of_range("DoubleLinkedList Is Empty");
+    }
+    return last->getData();
+  }
+}
+
+/**
+ * @brief Get the last element in the list (const version).
+ *
+ * This function returns a const reference to the data stored in the last node.
+ *
+ * @return Const reference to the last element.
+ * @throws std::out_of_range if the list is empty.
+ */
+const T &
+back() const
+{
+  if (empty())
+  {
+    throw std::out_of_range("DoubleLinkedList Is Empty");
+  }
+  return last->getData();
+}
+}
+
+/**
+ * @brief Get the number of elements in the list.
+ *
+ * This function returns the size of the list.
+ *
+ * @return The size of the list.
+ */
+unsigned int size() const { return sz; }
+
+/**
+ * @brief Remove all elements from the list.
+ *
+ * This function deletes all nodes in the list and resets the `first`, `last`, and `sz` attributes.
+ */
+void clear()
+{
+  freeNodes(first);
+  first = last = nullptr;
+  sz = 0;
+}
+
+/**
+ * @brief Get the element at a specific index (const version).
+ *
+ * This function returns a const reference to the data stored in the node at the specified index.
+ *
+ * @param index Index of the element to retrieve.
+ * @return Const reference to the element at the specified index.
+ * @throws std::out_of_range if the index is out of bounds.
+ */
+const T &at(unsigned int index) const
+{
+  if (index >= sz)
+  {
+    throw out_of_range("Index out of range");
+  }
+
+  Node *current;
+
+  if (index <= sz / 2)
+  {
+    current = first;
+    for (unsigned int i = 0; i < index; i++)
+    {
+      current = current->getNext();
+    }
+  }
+  else
+  {
+    current = last;
+    for (unsigned int i = sz - 1; i > index; i--)
+    {
+      current = current->getPrev();
+    }
+  }
+  return current->getData();
+}
+
+/**
+ * @brief Get the element at a specific index.
+ *
+ * This function returns a reference to the data stored in the node at the specified index.
+ *
+ * @param index Index of the element to retrieve.
+ * @return Reference to the element at the specified index.
+ * @throws std::out_of_range if the index is out of bounds.
+ */
+T &at(unsigned int index)
+{
+  if (index >= sz)
+  {
+    throw out_of_range("Index out of range");
+  }
+
+  Node *current; // ahora con este tipo de lista podemos hacerlo un poco mas eficiente O(n/2)
+
+  if (index <= sz / 2) // dependiendo en donde se encuentre el index podemos comenzar en first hasta la mitado en last hasta la mitad
+  {
+    current = first;
+    for (unsigned int i = 0; i < index; i++)
+    {
+      current = current->getNext();
+    }
+  }
+  else
+  {
+    current = last;
+    for (unsigned int i = sz - 1; i > index; i--)
+    {
+      current = current->getPrev();
+    }
+  }
+  return current->getData();
+}
+
+/**
+ * @brief Access an element using the subscript operator (const version).
+ *
+ * This function returns a const reference to the data stored in the node at the specified index.
+ *
+ * @param index Index of the element to access.
+ * @return Const reference to the element at the specified index.
+ */
+const T &operator[](unsigned int index) const
+{
+  return at(index);
+}
+
+/**
+ * @brief Access an element using the subscript operator.
+ *
+ * This function returns a reference to the data stored in the node at the specified index.
+ *
+ * @param index Index of the element to access.
+ * @return Reference to the element at the specified index.
+ */
+T &operator[](unsigned int index)
+{
+  return at(index);
+}
+
+/**
+ * @brief Insert an element at a specific index.
+ *
+ * This function inserts a new node with the given value at the specified index.
+ *
+ * @param index Index where the element will be inserted.
+ * @param val Value to insert.
+ * @throws std::out_of_range if the index is out of bounds.
+ */
+void insert(unsigned int index, const T &val)
+{
+  if (index > sz)
+    throw std::out_of_range("Index out of range");
+
+  if (index == 0)
+  {
+    push_front(val);
+  }
+  else if (index == sz)
+  {
+    push_back(val);
+  }
+  else
+  {
+    Node *newNode = new Node(val);
+    Node *current;
+
+    if (index < sz / 2)
+    {
+      current = first;
+      for (unsigned int i = 0; i < index - 1; i++)
+      {
+        current = current->getNext();
+      }
+    }
+    else
+    {
+      current = last;
+      for (unsigned int i = sz - 1; i > index - 1; i--)
+      {
+        current = current->getPrev();
+      }
+    }
+
+    Node *nextNode = (current->getNext());
+
+    newNode->setNext(nextNode);
+    newNode->setPrev(current);
+
+    nextNode->setPrev(newNode);
+    current->setNext(newNode);
+
+    sz++;
+  }
+}
+
+/**
+ * @brief Remove an element at a specific index.
+ *
+ * This function removes the node at the specified index.
+ *
+ * @param index Index of the element to remove.
+ * @throws std::out_of_range if the index is out of bounds.
+ */
+void erase(unsigned int index)
+{
+  if (index >= sz)
+    throw std::out_of_range("Index out of range");
+
+  if (index == 0)
+  {
+    pop_front();
+  }
+  else if (index == sz - 1)
+  {
+    pop_back();
+  }
+  else
+  {
+    Node *current;
+
+    if (index < sz / 2)
+    {
+      current = first;
+      for (unsigned int i = 0; i < index - 1; i++)
+      {
+        current = current->getNext();
+      }
+    }
+    else
+    {
+      current = last;
+      for (unsigned int i = sz - 1; i > index - 1; i--)
+      {
+        current = current->getPrev();
+      }
+    }
+
+    Node *temp = current->getNext();
+
+    current->setNext(temp->getNext());
+    temp->getNext()->setPrev(current);
+
+    delete temp;
+
+    sz--;
+  }
+}
+
+/**
+ * @brief Reverse the order of elements in the list.
+ *
+ * This function reverses the order of the nodes in the list. It updates
+ * the `first` and `last` pointers accordingly.
+ *
+ * @note The function does nothing if the list is empty or has only one node.
+ */
+void reverse()
+{
+  if (!first || first == last)
+  {
+    return;
+  }
+
+  Node *current = first;
+  Node *temp = nullptr;
+
+  while (current != nullptr)
+  {
+    temp = current->getPrev();  
+    current->setPrev(current->getNext());
+    current->setNext(temp);
+    current = current->getPrev();
+  }
+
+    last = first;
+    first = temp->getPrev();
+}
+
+/**
+ * @brief Copy constructor. Creates a deep copy of another list.
+ *
+ * This function creates a new list that is a deep copy of the given list.
+ *
+ * @param other List to copy.
+ */
+DoubleLinkedList(const List &other)
+{
+  /** your implementation here */
+}
+
+/**
+ * @brief Append the elements of another list to the end of this list.
+ *
+ * This function appends all elements of the given list to the end of the current list.
+ *
+ * @param other List whose elements will be appended.
+ */
+void push_back(const List &other)
+{
+  /** your implementation here */
+}
+
+/**
+ * @brief Prepend the elements of another list to the beginning of this list.
+ *
+ * This function prepends all elements of the given list to the beginning of the current list.
+ *
+ * @param other List whose elements will be prepended.
+ */
+void push_front(const List &other)
+{
+  /** your implementation here */
+}
+
+void print() const
+{
+  Node *temp = first;
+  while (temp != nullptr)
+  {
+    cout << temp->data << " ";
+    temp = temp->getNext();
+  }
+  cout << endl;
+}
+/**
+ * @brief Example usage of the List class.
+ */
+int main()
+{
+
+  DoubleLinkedList<int> lista;
+  lista.push_back(12);
+  lista.push_back(45);
+  lista.push_back(6);
+  lista.push_back(2);
+  lista.push_back(1);
+  lista.print();
+
+  lista.pop_back();
+  lista.print();
+
+  lista.push_front(3);
+  lista.print();
+
+  lista.pop_front();
+  lista.pop_front();
+  lista.print();
+
+  return 0;
+}
