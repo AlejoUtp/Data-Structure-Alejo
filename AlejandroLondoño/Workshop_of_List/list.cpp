@@ -456,12 +456,16 @@ public:
    */
   void push_front(const List &other)
   {
-    List<T> templist(other);
-    templist.reverse();
-    for (Node *current = templist.first; current != nullptr; current = current->getNext())
-    {
-      push_front(current->getData());
+    List *templist = new List(other); 
+    templist->last->setNext(first);
+    first = templist->first;
+    if (last == nullptr) {
+      last = templist->last;
     }
+    sz += templist->sz;
+    templist->first = templist->last = nullptr;
+    templist->sz = 0;
+    delete templist;
   }
 };
 
