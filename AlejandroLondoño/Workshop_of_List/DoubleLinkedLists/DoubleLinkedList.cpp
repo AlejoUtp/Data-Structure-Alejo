@@ -259,179 +259,72 @@ public:
     }
     return last->getData();
   }
-}
 
-/**
- * @brief Get the last element in the list (const version).
- *
- * This function returns a const reference to the data stored in the last node.
- *
- * @return Const reference to the last element.
- * @throws std::out_of_range if the list is empty.
- */
-const T &
-back() const
-{
-  if (empty())
+  /**
+   * @brief Get the last element in the list (const version).
+   *
+   * This function returns a const reference to the data stored in the last node.
+   *
+   * @return Const reference to the last element.
+   * @throws std::out_of_range if the list is empty.
+   */
+  const T &
+  back() const
   {
-    throw std::out_of_range("DoubleLinkedList Is Empty");
-  }
-  return last->getData();
-}
-}
-
-/**
- * @brief Get the number of elements in the list.
- *
- * This function returns the size of the list.
- *
- * @return The size of the list.
- */
-unsigned int size() const { return sz; }
-
-/**
- * @brief Remove all elements from the list.
- *
- * This function deletes all nodes in the list and resets the `first`, `last`, and `sz` attributes.
- */
-void clear()
-{
-  freeNodes(first);
-  first = last = nullptr;
-  sz = 0;
-}
-
-/**
- * @brief Get the element at a specific index (const version).
- *
- * This function returns a const reference to the data stored in the node at the specified index.
- *
- * @param index Index of the element to retrieve.
- * @return Const reference to the element at the specified index.
- * @throws std::out_of_range if the index is out of bounds.
- */
-const T &at(unsigned int index) const
-{
-  if (index >= sz)
-  {
-    throw out_of_range("Index out of range");
-  }
-
-  Node *current;
-
-  if (index <= sz / 2)
-  {
-    current = first;
-    for (unsigned int i = 0; i < index; i++)
+    if (empty())
     {
-      current = current->getNext();
+      throw std::out_of_range("DoubleLinkedList Is Empty");
     }
+    return last->getData();
   }
-  else
+
+  /**
+   * @brief Get the number of elements in the list.
+   *
+   * This function returns the size of the list.
+   *
+   * @return The size of the list.
+   */
+  unsigned int
+  size() const
   {
-    current = last;
-    for (unsigned int i = sz - 1; i > index; i--)
+    return sz;
+  }
+
+  /**
+   * @brief Remove all elements from the list.
+   *
+   * This function deletes all nodes in the list and resets the `first`, `last`, and `sz` attributes.
+   */
+  void clear()
+  {
+    freeNodes(first);
+    first = last = nullptr;
+    sz = 0;
+  }
+
+  /**
+   * @brief Get the element at a specific index (const version).
+   *
+   * This function returns a const reference to the data stored in the node at the specified index.
+   *
+   * @param index Index of the element to retrieve.
+   * @return Const reference to the element at the specified index.
+   * @throws std::out_of_range if the index is out of bounds.
+   */
+  const T &at(unsigned int index) const
+  {
+    if (index >= sz)
     {
-      current = current->getPrev();
+      throw out_of_range("Index out of range");
     }
-  }
-  return current->getData();
-}
 
-/**
- * @brief Get the element at a specific index.
- *
- * This function returns a reference to the data stored in the node at the specified index.
- *
- * @param index Index of the element to retrieve.
- * @return Reference to the element at the specified index.
- * @throws std::out_of_range if the index is out of bounds.
- */
-T &at(unsigned int index)
-{
-  if (index >= sz)
-  {
-    throw out_of_range("Index out of range");
-  }
+    Node *current; // ahora con este tipo de lista podemos hacerlo un poco mas eficiente O(n/2)
 
-  Node *current; // ahora con este tipo de lista podemos hacerlo un poco mas eficiente O(n/2)
-
-  if (index <= sz / 2) // dependiendo en donde se encuentre el index podemos comenzar en first hasta la mitado en last hasta la mitad
-  {
-    current = first;
-    for (unsigned int i = 0; i < index; i++)
-    {
-      current = current->getNext();
-    }
-  }
-  else
-  {
-    current = last;
-    for (unsigned int i = sz - 1; i > index; i--)
-    {
-      current = current->getPrev();
-    }
-  }
-  return current->getData();
-}
-
-/**
- * @brief Access an element using the subscript operator (const version).
- *
- * This function returns a const reference to the data stored in the node at the specified index.
- *
- * @param index Index of the element to access.
- * @return Const reference to the element at the specified index.
- */
-const T &operator[](unsigned int index) const
-{
-  return at(index);
-}
-
-/**
- * @brief Access an element using the subscript operator.
- *
- * This function returns a reference to the data stored in the node at the specified index.
- *
- * @param index Index of the element to access.
- * @return Reference to the element at the specified index.
- */
-T &operator[](unsigned int index)
-{
-  return at(index);
-}
-
-/**
- * @brief Insert an element at a specific index.
- *
- * This function inserts a new node with the given value at the specified index.
- *
- * @param index Index where the element will be inserted.
- * @param val Value to insert.
- * @throws std::out_of_range if the index is out of bounds.
- */
-void insert(unsigned int index, const T &val)
-{
-  if (index > sz)
-    throw std::out_of_range("Index out of range");
-
-  if (index == 0)
-  {
-    push_front(val);
-  }
-  else if (index == sz)
-  {
-    push_back(val);
-  }
-  else
-  {
-    Node *newNode = new Node(val);
-    Node *current;
-
-    if (index < sz / 2)
+    if (index <= sz / 2) // dependiendo en donde se encuentre el index podemos comenzar en first hasta la mitado en last hasta la mitad
     {
       current = first;
-      for (unsigned int i = 0; i < index - 1; i++)
+      for (unsigned int i = 0; i < index; i++)
       {
         current = current->getNext();
       }
@@ -439,53 +332,36 @@ void insert(unsigned int index, const T &val)
     else
     {
       current = last;
-      for (unsigned int i = sz - 1; i > index - 1; i--)
+      for (unsigned int i = sz - 1; i > index; i--)
       {
         current = current->getPrev();
       }
     }
-
-    Node *nextNode = (current->getNext());
-
-    newNode->setNext(nextNode);
-    newNode->setPrev(current);
-
-    nextNode->setPrev(newNode);
-    current->setNext(newNode);
-
-    sz++;
+    return current->getData();
   }
-}
 
-/**
- * @brief Remove an element at a specific index.
- *
- * This function removes the node at the specified index.
- *
- * @param index Index of the element to remove.
- * @throws std::out_of_range if the index is out of bounds.
- */
-void erase(unsigned int index)
-{
-  if (index >= sz)
-    throw std::out_of_range("Index out of range");
+  /**
+   * @brief Get the element at a specific index.
+   *
+   * This function returns a reference to the data stored in the node at the specified index.
+   *
+   * @param index Index of the element to retrieve.
+   * @return Reference to the element at the specified index.
+   * @throws std::out_of_range if the index is out of bounds.
+   */
+  T &at(unsigned int index)
+  {
+    if (index >= sz)
+    {
+      throw out_of_range("Index out of range");
+    }
 
-  if (index == 0)
-  {
-    pop_front();
-  }
-  else if (index == sz - 1)
-  {
-    pop_back();
-  }
-  else
-  {
-    Node *current;
+    Node *current; // ahora con este tipo de lista podemos hacerlo un poco mas eficiente O(n/2)
 
-    if (index < sz / 2)
+    if (index <= sz / 2) // dependiendo en donde se encuentre el index podemos comenzar en first hasta la mitado en last hasta la mitad
     {
       current = first;
-      for (unsigned int i = 0; i < index - 1; i++)
+      for (unsigned int i = 0; i < index; i++)
       {
         current = current->getNext();
       }
@@ -493,106 +369,281 @@ void erase(unsigned int index)
     else
     {
       current = last;
-      for (unsigned int i = sz - 1; i > index - 1; i--)
+      for (unsigned int i = sz - 1; i > index; i--)
       {
         current = current->getPrev();
       }
     }
-
-    Node *temp = current->getNext();
-
-    current->setNext(temp->getNext());
-    temp->getNext()->setPrev(current);
-
-    delete temp;
-
-    sz--;
+    return current->getData();
   }
-}
 
-/**
- * @brief Reverse the order of elements in the list.
- *
- * This function reverses the order of the nodes in the list. It updates
- * the `first` and `last` pointers accordingly.
- *
- * @note The function does nothing if the list is empty or has only one node.
- */
-void reverse()
-{
-  if (!first || first == last)
+  /**
+   * @brief Access an element using the subscript operator (const version).
+   *
+   * This function returns a const reference to the data stored in the node at the specified index.
+   *
+   * @param index Index of the element to access.
+   * @return Const reference to the element at the specified index.
+   */
+  const T &operator[](unsigned int index) const
   {
-    return;
+    return at(index);
   }
 
-  Node *current = first;
-  Node *temp = nullptr;
-
-  while (current != nullptr)
+  /**
+   * @brief Access an element using the subscript operator.
+   *
+   * This function returns a reference to the data stored in the node at the specified index.
+   *
+   * @param index Index of the element to access.
+   * @return Reference to the element at the specified index.
+   */
+  T &operator[](unsigned int index)
   {
-    temp = current->getPrev();  
-    current->setPrev(current->getNext());
-    current->setNext(temp);
-    current = current->getPrev();
+    return at(index);
   }
+
+  /**
+   * @brief Insert an element at a specific index.
+   *
+   * This function inserts a new node with the given value at the specified index.
+   *
+   * @param index Index where the element will be inserted.
+   * @param val Value to insert.
+   * @throws std::out_of_range if the index is out of bounds.
+   */
+  void insert(unsigned int index, const T &val)
+  {
+    if (index > sz)
+      throw std::out_of_range("Index out of range");
+
+    if (index == 0)
+    {
+      push_front(val);
+    }
+    else if (index == sz)
+    {
+      push_back(val);
+    }
+    else
+    {
+      Node *newNode = new Node(val);
+      Node *current;
+
+      if (index < sz / 2)
+      {
+        current = first;
+        for (unsigned int i = 0; i < index - 1; i++)
+        {
+          current = current->getNext();
+        }
+      }
+      else
+      {
+        current = last;
+        for (unsigned int i = sz - 1; i > index - 1; i--)
+        {
+          current = current->getPrev();
+        }
+      }
+
+      Node *nextNode = (current->getNext());
+
+      newNode->setNext(nextNode);
+      newNode->setPrev(current);
+
+      nextNode->setPrev(newNode);
+      current->setNext(newNode);
+
+      sz++;
+    }
+  }
+
+  /**
+   * @brief Remove an element at a specific index.
+   *
+   * This function removes the node at the specified index.
+   *
+   * @param index Index of the element to remove.
+   * @throws std::out_of_range if the index is out of bounds.
+   */
+  void erase(unsigned int index)
+  {
+    if (index >= sz)
+      throw std::out_of_range("Index out of range");
+
+    if (index == 0)
+    {
+      pop_front();
+    }
+    else if (index == sz - 1)
+    {
+      pop_back();
+    }
+    else
+    {
+      Node *current;
+
+      if (index < sz / 2)
+      {
+        current = first;
+        for (unsigned int i = 0; i < index - 1; i++)
+        {
+          current = current->getNext();
+        }
+      }
+      else
+      {
+        current = last;
+        for (unsigned int i = sz - 1; i > index - 1; i--)
+        {
+          current = current->getPrev();
+        }
+      }
+
+      Node *temp = current->getNext();
+
+      current->setNext(temp->getNext());
+      temp->getNext()->setPrev(current);
+
+      delete temp;
+
+      sz--;
+    }
+  }
+
+  /**
+   * @brief Reverse the order of elements in the list.
+   *
+   * This function reverses the order of the nodes in the list. It updates
+   * the `first` and `last` pointers accordingly.
+   *
+   * @note The function does nothing if the list is empty or has only one node.
+   */
+  void reverse()
+  {
+    if (!first || first == last)
+    {
+      return;
+    }
+
+    Node *current = first;
+    Node *temp = nullptr;
+
+    while (current != nullptr)
+    {
+      temp = current->getPrev();
+      current->setPrev(current->getNext());
+      current->setNext(temp);
+      current = current->getPrev();
+    }
 
     last = first;
-    first = temp->getPrev();
-}
-
-/**
- * @brief Copy constructor. Creates a deep copy of another list.
- *
- * This function creates a new list that is a deep copy of the given list.
- *
- * @param other List to copy.
- */
-DoubleLinkedList(const List &other)
-{
-  /** your implementation here */
-}
-
-/**
- * @brief Append the elements of another list to the end of this list.
- *
- * This function appends all elements of the given list to the end of the current list.
- *
- * @param other List whose elements will be appended.
- */
-void push_back(const List &other)
-{
-  /** your implementation here */
-}
-
-/**
- * @brief Prepend the elements of another list to the beginning of this list.
- *
- * This function prepends all elements of the given list to the beginning of the current list.
- *
- * @param other List whose elements will be prepended.
- */
-void push_front(const List &other)
-{
-  /** your implementation here */
-}
-
-void print() const
-{
-  Node *temp = first;
-  while (temp != nullptr)
-  {
-    cout << temp->data << " ";
-    temp = temp->getNext();
+    first = temp->getPrev(); // No es un swap (temp = first; first = last; last = temp;), sino una reasignación apoyándome en la estructura enlazada de la lista.
   }
-  cout << endl;
+
+  /**
+   * @brief Copy constructor. Creates a deep copy of another list.
+   *
+   * This function creates a new list that is a deep copy of the given list.
+   *
+   * @param other List to copy.
+   */
+  DoubleLinkedList(const DoubleLinkedList<T> &other)
+  {
+    first = last = nullptr;
+    sz = 0;
+
+    Node *current = other.first; // el codigo queda igual a el de list, existe una forma de intentar optimizar, pero es una mejora muy pequeña a comparacion de los bugs que puede ocacionar
+    while (current != nullptr)
+    {
+      push_back(current->getData());
+      current = current->getNext();
+    }
+  }
+
+  /**
+   * @brief Append the elements of another list to the end of this list.
+   *
+   * This function appends all elements of the given list to the end of the current list.
+   *
+   * @param other List whose elements will be appended.
+   */
+  void push_back(const DoubleLinkedList<T> &other)
+  {
+    if (other.empty())
+      return;
+
+    Node *current = other.first;
+    while (current != nullptr)
+    {
+      push_back(current->getData()); // ← Esta función YA maneja los prev
+      current = current->getNext();
+    }
+  }
+
+  /**
+   * @brief Prepend the elements of another list to the beginning of this list.
+   *
+   * This function prepends all elements of the given list to the beginning of the current list.
+   *
+   * @param other List whose elements will be prepended.
+   */
+  void push_front(const DoubleLinkedList<T> &other)
+  {
+    if (other.empty())
+      return;
+
+    Node *current = other.last; // a comparacion de la lista simplemente enlazada ahora no es necesario hacer una copia de la lista other y cambiar a donde apuntan sus nodos
+    while (current != nullptr) // ahora simplemente se hace lo mismo que el push_back de agregar elementeo por elemento pero al revez desde last hasta nullptr osea terminar la lista
+    {
+      push_front(current->getData());  
+      current = current->getPrev();
+    }
+  }
+
+/**
+ * @brief Assignment operator. Assigns the contents of another list to this list.
+ * 
+ * This function clears the current list and performs a deep copy of the given list.
+ * 
+ * @param other List to copy.
+ * @return Reference to this list.
+ */
+DoubleLinkedList& operator=(const DoubleLinkedList &other) {  //operador de asignacion
+    if (this != &other) { // Evitar autoasignación
+        clear(); // Limpiar la lista actual
+        Node* current = other.first;
+        while (current != nullptr) {
+            push_back(current->getData());
+            current = current->getNext();
+        }
+    }
+    return *this;
 }
+
+
+  void print() const
+  {
+    Node *temp = first;
+    while (temp != nullptr)
+    {
+      cout << temp->getData() << " ";
+      temp = temp->getNext();
+    }
+    cout << endl;
+  }
+};
+
 /**
  * @brief Example usage of the List class.
  */
-int main()
+int
+main()
 {
 
   DoubleLinkedList<int> lista;
+
   lista.push_back(12);
   lista.push_back(45);
   lista.push_back(6);
@@ -608,6 +659,41 @@ int main()
 
   lista.pop_front();
   lista.pop_front();
+  lista.print();
+
+  lista.push_back(1);
+  lista.push_back(2);
+  lista.push_back(3);
+  lista.print();
+
+  lista.erase(5);
+  lista.print();
+
+  lista.insert(3, 34);
+  lista.print();
+
+  lista.reverse();
+  lista.print();
+
+  lista.push_back(1);
+  lista.print();
+
+  lista.push_front(3);
+  lista.print();
+
+  cout << "First: " << lista.front() << endl;
+  cout << "Last: " << lista.back() << endl;
+
+  DoubleLinkedList<int> copylista(lista);
+
+  copylista.pop_front();
+  copylista.pop_front();
+  copylista.pop_front();
+  copylista.pop_front();
+  copylista.pop_front();
+
+  copylista.print();
+  lista.push_front(copylista);
   lista.print();
 
   return 0;
