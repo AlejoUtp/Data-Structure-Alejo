@@ -456,6 +456,7 @@ public:
    */
   void push_front(const List &other)
   {
+<<<<<<< HEAD
     List *templist = new List(other); 
     templist->last->setNext(first);
     first = templist->first;
@@ -467,6 +468,14 @@ public:
     templist->sz = 0;
     delete templist;
   }
+=======
+    List<T> *templist = new List<T>(other);
+    templist->reverse();
+    templist->last->setNext(first);
+    first = templist->first;
+    sz = sz + templist->sz;
+      }
+>>>>>>> 2553524596b9e2d3ace990b9c1229fb9358264ae
 };
 
 /**
