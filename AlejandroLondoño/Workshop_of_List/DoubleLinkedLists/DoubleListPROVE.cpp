@@ -20,7 +20,7 @@ private:
   private:
     T data;     ///< Value stored in the node.
     Node *next; ///< Pointer to the next node.
-    Nodo *prev; ///< Pointer to the previous node.
+    Node *prev; ///< Pointer to the previous node.
   public:
     /**
      * @brief Default constructor. Initializes data and next pointer.
@@ -83,6 +83,7 @@ private:
       delete node;
       node = temp;
     }
+  }
 
   public:
     /**
@@ -127,102 +128,29 @@ private:
       sz++;
     }
 
-    void pop_back()
-    {
-      /** your implementation here */
-    }
-    void push_front(const T &val)
-    {
-      /** your implementation here */
-    }
-    void pop_front()
-    {
-      /** your implementation here */
-    }
-    T &front()
-    {
-      /** your implementation here */
-    }
-    const T &front() const
-    {
-      /** your implementation here */
-    }
-    T &back()
-    {
-      /** your implementation here */
-    }
-    const T &back() const
-    {
-      /** your implementation here */
-    }
-    unsigned int size() const
-    {
-      /** your implementation here */
-    }
-    void clear()
-    {
-      /** your implementation here */
-    }
-    const T &at(unsigned int index) const
-    {
-      /** your implementation here */
-    }
-    T &at(unsigned int index)
-    {
-      /** your implementation here */
-    }
-    const T &operator[](unsigned int index) const
-    {
-      /** your implementation here */
-    }
-    T &operator[](unsigned int index)
-    {
-      /** your implementation here */
-    }
-    void insert(unsigned int index, const T &val)
-    {
-      /** your implementation here */
-    }
-    void erase(unsigned int index)
-    {
-      /** your implementation here */
-    }
     void print() const
     {
-      Node *temp = first;
-      while (temp != nullptr)
+      Node *current = first;
+      while (current != nullptr)
       {
-        cout << temp->data << " ";
-        temp = temp->getNext();
+        cout << current->getData << " ";
+        current = current->getNext();
       }
       cout << endl;
     }
-    void reverse()
-    {
-      /** your implementation here */
-    }
-    List(const List &other)
-    {
-      /** your implementation here */
-    }
-    void push_back(const List &other)
-    {
-      /** your implementation here */
-    }
-    void push_front(const List &other)
-    {
-      /** your implementation here */
-    }
   };
 
-  /**
-   * @brief Example usage of the List class.
-   */
-  int main()
-  {
-    List<int> l;
-    l.push_back(10);
-    l.push_back(20);
-    l.push_back(30);
+int main(){
+    
+    DoubleLinkedList<int> lista;
+    lista.push_back(2);
+    lista.push_back(2);
+    lista.push_back(2);
+    lista.push_back(2);
+    lista.push_back(2);
+
+    lista.print();
     return 0;
-  }
+}
+ 
+
