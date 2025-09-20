@@ -424,7 +424,7 @@ public:
    * @brief Copy constructor. Creates a deep copy of another list.
    * @param other List to copy.
    */
-  List(const List &other)
+  List(const List<T> &other)
   {
     first = last = nullptr;
     sz = 0;
@@ -440,7 +440,7 @@ public:
    * @brief Append the elements of another list to the end of this list.
    * @param other List whose elements will be appended.
    */
-  void push_back(const List &other)
+  void push_back(const List<T> &other)
   {
     Node *current = other.first;
     while (current != nullptr)
@@ -454,9 +454,8 @@ public:
    * @brief Prepend the elements of another list to the beginning of this list.
    * @param other List whose elements will be prepended.
    */
-  void push_front(const List &other)
+  void push_front(const List<T> &other)
   {
-<<<<<<< HEAD
     List *templist = new List(other); 
     templist->last->setNext(first);
     first = templist->first;
@@ -468,14 +467,6 @@ public:
     templist->sz = 0;
     delete templist;
   }
-=======
-    List<T> *templist = new List<T>(other);
-    templist->reverse();
-    templist->last->setNext(first);
-    first = templist->first;
-    sz = sz + templist->sz;
-      }
->>>>>>> 2553524596b9e2d3ace990b9c1229fb9358264ae
 };
 
 /**

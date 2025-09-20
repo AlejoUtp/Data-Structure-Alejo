@@ -117,7 +117,7 @@ private:
       Node *newNode = new Node(val);
       if (empty())
       {
-        last = first = nullptr;
+        last = first = newNode;
       }
       else
       {
@@ -133,7 +133,7 @@ private:
       Node *current = first;
       while (current != nullptr)
       {
-        cout << current->getData << " ";
+        cout << current->getData() << " ";
         current = current->getNext();
       }
       cout << endl;
@@ -147,7 +147,7 @@ int main(){
     lista.push_back(2);
     lista.push_back(2);
     lista.push_back(2);
-    lista.push_back(2);
+    lista.push_back(1);
 
     lista.print();
     return 0;
