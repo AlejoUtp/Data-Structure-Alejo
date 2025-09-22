@@ -1,7 +1,6 @@
 #ifndef LIST_HH
 #define LIST_HH
 
-
 #include <iostream>
 #include <stdexcept>
 
@@ -447,7 +446,7 @@ public:
   void push_back(const List<T> &other)
   {
     if (other.empty())
-      return; 
+      return;
 
     Node *current = other.first;
     while (current != nullptr)
@@ -464,7 +463,7 @@ public:
   void push_front(const List<T> &other)
   {
     if (other.empty())
-      return; 
+      return;
 
     if (empty())
     {
@@ -488,6 +487,44 @@ public:
       delete templist;
     }
   }
+
+  List<T> &operator=(const List<T> &other)
+  { // operador de asignacion
+    if (this != &other)
+    {          // Evitar autoasignación
+      clear(); // Limpiar la lista actual
+      Node *current = other.first;
+      while (current != nullptr)
+      {
+        push_back(current->getData());
+        current = current->getNext();
+      }
+    }
+  }
+
+    /**
+ * @brief Check if two lists are equal.
+ * @param other List to compare with.
+ * @return true if lists are equal, false otherwise.
+ */
+bool operator==(const List<T> &other) const {
+    if (sz != other.sz) {
+        return false;
+    }
+
+    Node* current = first;
+    Node* otherCurrent = other.first;
+
+    while (current != nullptr) {
+        if (current->getData() != otherCurrent->getData()) {
+            return false;
+        }
+        current = current->getNext();
+        otherCurrent = otherCurrent->getNext();
+    }
+    
+    return true;
+ }
 };
 
 #endif // LIST_HH

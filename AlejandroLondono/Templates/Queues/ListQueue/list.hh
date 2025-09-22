@@ -394,7 +394,7 @@ public:
     Node *temp = first;
     while (temp != nullptr)
     {
-      cout << temp->getData() << " ";
+      cout << temp->getData() << " -> ";
       temp = temp->getNext();
     }
     cout << endl;
@@ -500,6 +500,7 @@ public:
         current = current->getNext();
       }
     }
+    return *this;
   }
 
     /**

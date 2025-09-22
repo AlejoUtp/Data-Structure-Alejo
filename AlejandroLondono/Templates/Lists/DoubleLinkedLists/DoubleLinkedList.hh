@@ -623,6 +623,7 @@ DoubleLinkedList& operator=(const DoubleLinkedList &other) {  //operador de asig
             current = current->getNext();
         }
     }
+    
     return *this;
 }
 
