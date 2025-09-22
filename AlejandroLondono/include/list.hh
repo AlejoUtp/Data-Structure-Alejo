@@ -1,3 +1,7 @@
+#ifndef LIST_HH
+#define LIST_HH
+
+
 #include <iostream>
 #include <stdexcept>
 
@@ -486,7 +490,4 @@ public:
   }
 };
 
-  /**
-   * @brief Example usage of the List class.
-   */
-
+#endif // LIST_HH
