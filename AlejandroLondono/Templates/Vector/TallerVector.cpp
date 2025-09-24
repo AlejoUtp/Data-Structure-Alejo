@@ -13,7 +13,7 @@ private:
     // Current number of elements in the vector
     unsigned int sz;
     // Maximum number of elements that storage can hold
-    unsigned int capacity;
+    unsigned int cap;
     // Policy for resizing the vector
     double policy;
 
@@ -25,7 +25,7 @@ public:
     {
         storage = new T[5];
         sz = 0;
-        capacity = 5;
+        cap = 5;
         policy = 1.5;
     }
 
@@ -34,7 +34,7 @@ public:
     {
         storage = new T[c];
         sz = 0;
-        capacity = c;
+        cap = c;
         policy = p;
     }
 
@@ -42,9 +42,9 @@ public:
     Vector(const Vector<T> &other)
     {
         sz = other.size();
-        capacity = other.capacity;
+        cap = other.cap;
         policy = other.policy;
-        storage = new T[capacity];
+        storage = new T[cap];
         for (unsigned int i = 0; i < sz; i++)
         {
             storage[i] = other.storage[i];
@@ -54,8 +54,8 @@ public:
     // Constructor por lista de inicialización
     Vector(std::initializer_list<T> init)
     {
-        capacity = (init.size() > 0 ? static_cast<unsigned int>(init.size()) : 5);
-        storage = new T[capacity];
+        cap = (init.size() > 0 ? static_cast<unsigned int>(init.size()) : 5);
+        storage = new T[cap];
         sz = 0;
         policy = 1.5;
         for (const auto &val : init)
@@ -71,8 +71,8 @@ public:
         {
             delete[] storage;
             sz = other.sz;
-            capacity = other.capacity; // Para LAVector
-            storage = new T[capacity];
+            cap = other.cap;
+            storage = new T[cap];
             for (unsigned int i = 0; i < sz; i++)
             {
                 storage[i] = other.storage[i];
@@ -87,7 +87,7 @@ public:
     // --- Métodos de acceso (getters) ---------------------------------------
 
     unsigned int size() const { return sz; }
-    unsigned int getCapacity() const { return capacity; }
+    unsigned int getCapacity() const { return cap; }
     double getPolicy() const { return policy; }
 
     // --- Métodos de modificación ---------------------------------------
@@ -103,7 +103,7 @@ public:
 
     void push_back(const T &elem)
     {
-        if (sz == capacity)
+        if (sz == cap)
         {
             resize();
         }
@@ -119,7 +119,7 @@ public:
 
     void shrink_to_fit()
     {
-        if (sz < capacity)
+        if (sz < cap)
         {
             T *new_storage = new T[sz];
             for (unsigned int i = 0; i < sz; i++)
@@ -128,7 +128,7 @@ public:
             }
             delete[] storage;
             storage = new_storage;
-            capacity = sz;
+            cap = sz;
         }
     }
     // --- Acceso por índice ---------------------------------------
@@ -166,8 +166,8 @@ public:
 private:
     void resize()
     {
-        capacity *= policy;
-        T *new_storage = new T[capacity];
+        cap *= policy;
+        T *new_storage = new T[cap];
         for (unsigned int i = 0; i < sz; i++)
         {
             new_storage[i] = storage[i];
@@ -178,10 +178,10 @@ private:
 
     void reserve(unsigned int new_capacity)
     {
-        if (new_capacity > capacity)
+        if (new_capacity > cap)
         {
-            capacity = new_capacity;
-            T *new_storage = new T[capacity];
+            cap = new_capacity;
+            T *new_storage = new T[cap];
             for (unsigned int i = 0; i < sz; i++)
             {
                 new_storage[i] = storage[i];

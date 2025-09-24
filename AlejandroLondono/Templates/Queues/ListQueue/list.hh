@@ -109,16 +109,16 @@ public:
    */
   void push_back(const T &val)
   {
-    Node *newNode = new Node(val);
+    Node *NewNode = new Node(val);
     if (!empty())
     {
-      last->setNext(newNode);
+      last->setNext(NewNode);
     }
     else
     {
-      first = newNode;
+      first = NewNode;
     }
-    last = newNode;
+    last = NewNode;
     sz++;
   }
 
@@ -129,44 +129,47 @@ public:
    */
   void pop_back()
   {
-    if (!empty())
+    if (empty())
     {
-      if (first == last)
-      {
-        delete first;
-        first = last = nullptr;
-      }
-      else
-      {
-        Node *temp = first;
-        while (temp->getNext() != last)
-        {
-          temp = temp->getNext();
-        }
-        delete last;
-        last = temp;
-        last->setNext(nullptr);
-      }
-      sz--;
+      return;
     }
+
+    if (first == last)
+    {
+      delete first;
+      first = last = nullptr;
+    }
+    else
+    {
+      Node *current = first;
+      while (current->getNext() != last)
+      {
+        current = current->getNext();
+      }
+      delete last;
+      last = current;
+      last->setNext(nullptr);
+    }
+    sz--;
   }
 
   /**
    * @brief Add an element to the beginning of the list.
    * @param val Value to add.
    */
-  void push_front(const T &val)
+  void
+  push_front(const T &val)
   {
-    Node *newNode = new Node(val);
-    if (!empty())
+    Node *NewNode = new Node(val);
+    if (empty())
     {
-      newNode->setNext(first);
+      last = NewNode;
     }
     else
     {
-      last = newNode;
+      NewNode->setNext(first);
     }
-    first = newNode;
+    first = NewNode;
     sz++;
   }
 
@@ -503,29 +506,33 @@ public:
     return *this;
   }
 
-    /**
- * @brief Check if two lists are equal.
- * @param other List to compare with.
- * @return true if lists are equal, false otherwise.
- */
-bool operator==(const List<T> &other) const {
-    if (sz != other.sz) {
+  /**
+   * @brief Check if two lists are equal.
+   * @param other List to compare with.
+   * @return true if lists are equal, false otherwise.
+   */
+  bool operator==(const List<T> &other) const
+  {
+    if (sz != other.sz)
+    {
+      return false;
+    }
+
+    Node *current = first;
+    Node *otherCurrent = other.first;
+
+    while (current != nullptr)
+    {
+      if (current->getData() != otherCurrent->getData())
+      {
         return false;
+      }
+      current = current->getNext();
+      otherCurrent = otherCurrent->getNext();
     }
 
-    Node* current = first;
-    Node* otherCurrent = other.first;
-
-    while (current != nullptr) {
-        if (current->getData() != otherCurrent->getData()) {
-            return false;
-        }
-        current = current->getNext();
-        otherCurrent = otherCurrent->getNext();
-    }
-    
     return true;
- }
+  }
 };
 
 #endif // LIST_HH

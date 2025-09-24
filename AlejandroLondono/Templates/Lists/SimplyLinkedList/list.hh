@@ -502,29 +502,33 @@ public:
     }
   }
 
-    /**
- * @brief Check if two lists are equal.
- * @param other List to compare with.
- * @return true if lists are equal, false otherwise.
- */
-bool operator==(const List<T> &other) const {
-    if (sz != other.sz) {
+  /**
+   * @brief Check if two lists are equal.
+   * @param other List to compare with.
+   * @return true if lists are equal, false otherwise.
+   */
+  bool operator==(const List<T> &other) const
+  {
+    if (sz != other.sz)
+    {
+      return false;
+    }
+
+    Node *current = first;
+    Node *otherCurrent = other.first;
+
+    while (current != nullptr)
+    {
+      if (current->getData() != otherCurrent->getData())
+      {
         return false;
+      }
+      current = current->getNext();
+      otherCurrent = otherCurrent->getNext();
     }
 
-    Node* current = first;
-    Node* otherCurrent = other.first;
-
-    while (current != nullptr) {
-        if (current->getData() != otherCurrent->getData()) {
-            return false;
-        }
-        current = current->getNext();
-        otherCurrent = otherCurrent->getNext();
-    }
-    
     return true;
- }
+  }
 };
 
 #endif // LIST_HH

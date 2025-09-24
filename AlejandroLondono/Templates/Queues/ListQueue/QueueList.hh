@@ -141,6 +141,7 @@ public:
     unsigned int size() const
     {
         return storage.size();
+        
     }
 
     /**

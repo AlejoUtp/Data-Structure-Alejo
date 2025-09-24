@@ -542,8 +542,8 @@ public:
       current = current->getPrev();
     }
 
-    last = first;
-    first = temp->getPrev(); // No es un swap (temp = first; first = last; last = temp;), sino una reasignación apoyándome en la estructura enlazada de la lista.
+    last = first; 
+    first = temp->getPrev(); // No es un swap(temp = first; first = last; last = temp;), sino una reasignación apoyándome en la estructura enlazada de la lista.
   }
 
   /**
