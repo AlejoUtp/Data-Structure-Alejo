@@ -4,6 +4,7 @@
 #include <iostream>
 #include <stdexcept>
 #include <string>
+#include <queue>
 
 using namespace std;
 /**
@@ -222,15 +223,18 @@ private:
                 return temp;
             }
 
-            else{
+            else
+            {
                 // Caso 3: dos hijos
-                Node *successor = findMinHelper(node->getRight()); // el sucesor inorden es el minimo del subarbol derecho
-                node->setValue(successor->getValue()); // copiamos el valor del sucesor al nodo actual
-                node->setKey(successor->getKey()); // copiamos la clave del sucesor al nodo actual
-                node->setRight(removeHelper(node->getRight(), successor->getKey())); // eliminamos el sucesor del subarbol derecho
-                return node;
+                Node *successor = findMinHelper(node->getRight());                   // el sucesor inorden es el minimo del subarbol derecho
+                Node *newNode = new Node(successor->getKey(), successor->getValue());
+                newNode->setLeft(node->getLeft());
+                newNode->setRight(removeHelper(node->getRight(), successor->getKey())); // eliminamos el sucesor inorden del subarbol derecho
+                delete node;
+                return newNode;
             }
         }
+        return node;
     }
 
     /**
@@ -238,8 +242,12 @@ private:
      * @param node Raíz del subárbol
      * @return Puntero al nodo con clave mínima
      */
-    Node *findMinHelper(Node *node) const {
-        while( node->hasLeft() ){
+    Node *findMinHelper(Node *node) const
+    {
+        if (node == nullptr)
+            return nullptr;
+        while (node->hasLeft())
+        {
             node = node->getLeft();
         }
         return node;
@@ -250,53 +258,128 @@ private:
      * @param node Raíz del subárbol
      * @return Puntero al nodo con clave máxima
      */
-    Node *findMaxHelper(Node *node) const;
+    Node *findMaxHelper(Node *node) const
+    {
+        if (node == nullptr)
+            return nullptr;
 
-    /**
-     * @brief Recorrido inorden recursivo
-     * @param node Nodo actual en la recursión
-     */
-    void inorderHelper(Node *node) const {
-        if ( node == nullptr ){
-            return;
+        while (node->hasRight())
+        {
+            node = node->getRight();
         }
-
-        inorderHelper(node->getLeft());
-        cout << node->getKey() << ": " << node->getValue();
-        inorderHelper(node->getRight());
+        return node;
     }
 
     /**
-     * @brief Recorrido preorden recursivo
+     * @brief Recorrido inorden recursivo (Izquierda-Raíz-Derecha)
      * @param node Nodo actual en la recursión
+     *
+     * Visita el subárbol izquierdo, luego el nodo actual, luego el subárbol derecho.
+     * Este recorrido produce los elementos en orden ascendente por clave.
+     *
+     * @complexity O(n) donde n es el número de nodos en el subárbol
      */
-    void preorderHelper(Node *node) const;
+    void inorderHelper(Node *node) const
+    {
+        if (node == nullptr)
+        {
+            return;
+        }
+
+        inorderHelper(node->getLeft());                             // 1. Visitar izquierda
+        cout << node->getKey() << ": " << node->getValue() << endl; // 2. Procesar raíz
+        inorderHelper(node->getRight());                            // 3. Visitar derecha
+    }
 
     /**
-     * @brief Recorrido postorden recursivo
+     * @brief Recorrido preorden recursivo (Raíz-Izquierda-Derecha)
      * @param node Nodo actual en la recursión
+     *
+     * Visita primero el nodo actual, luego el subárbol izquierdo, luego el derecho.
+     * Útil para copiar el árbol o crear una representación serializada.
+     *
+     * @complexity O(n) donde n es el número de nodos en el subárbol
      */
-    void postorderHelper(Node *node) const;
+    void preorderHelper(Node *node) const
+    {
+        if (node == nullptr)
+        {
+            return;
+        }
+
+        cout << node->getKey() << ": " << node->getValue() << endl; // 1. Procesar raíz ✅
+        preorderHelper(node->getLeft());                            // 2. Visitar izquierda ✅
+        preorderHelper(node->getRight());                           // 3. Visitar derecha ✅
+    }
+
+    /**
+     * @brief Recorrido postorden recursivo (Izquierda-Derecha-Raíz)
+     * @param node Nodo actual en la recursión
+     *
+     * Visita el subárbol izquierdo, luego el derecho, y finalmente el nodo actual.
+     * Útil para eliminar el árbol o evaluar expresiones postfijas.
+     *
+     * @complexity O(n) donde n es el número de nodos en el subárbol
+     */
+    void postorderHelper(Node *node) const
+    {
+        if (node == nullptr)
+        {
+            return;
+        }
+
+        postorderHelper(node->getLeft());                           // 1. Visitar izquierda ✅
+        postorderHelper(node->getRight());                          // 2. Visitar derecha ✅
+        cout << node->getKey() << ": " << node->getValue() << endl; // 3. Procesar raíz ✅
+    }
 
     /**
      * @brief Calcula la altura del árbol recursivamente
      * @param node Nodo actual en la recursión
      * @return Altura del subárbol
      */
-    int heightHelper(Node *node) const;
+    int heightHelper(Node *node) const
+    {
+        if (node == nullptr)
+        {
+            return -1; // Altura de árbol vacío es -1
+        }
+        int leftHeight = heightHelper(node->getLeft());
+        int rightHeight = heightHelper(node->getRight());
+        return 1 + max(leftHeight, rightHeight);
+    }
 
     /**
      * @brief Elimina todos los nodos del árbol recursivamente
      * @param node Nodo actual en la recursión
      */
-    void clearHelper(Node *node);
+    void clearHelper(Node *node)
+    {
+        if (node == nullptr)
+        {
+            return;
+        }
+        clearHelper(node->getLeft());
+        clearHelper(node->getRight());
+        delete node;
+    }
 
     /**
      * @brief Copia un árbol recursivamente
      * @param node Nodo del árbol a copiar
      * @return Puntero al nuevo nodo copiado
      */
-    Node *copyHelper(Node *node);
+    Node *copyHelper(Node *node)
+    {
+        if (node == nullptr)
+        {
+            return nullptr;
+        }
+        Node *newNode = new Node(node->getKey(), node->getValue());
+        newNode->setLeft(copyHelper(node->getLeft()));
+        newNode->setRight(copyHelper(node->getRight()));
+        return newNode;
+    }
 
     /**
      * @brief Imprime el árbol de forma visual
@@ -304,7 +387,22 @@ private:
      * @param prefix Prefijo para la indentación
      * @param isLeft Indica si es hijo izquierdo
      */
-    void printTreeHelper(Node *node, const std::string &prefix, bool isLeft) const;
+    void printTreeHelper(Node *node, const std::string &prefix, bool isLeft) const
+    {
+        if (node != nullptr)
+        {
+            std::cout << prefix;
+
+            std::cout << (isLeft ? "├──" : "└──");
+
+            // print the value of the node
+            std::cout << node->getKey() << ": " << node->getValue() << std::endl;
+
+            // enter the next tree level - left and right branch
+            printTreeHelper(node->getLeft(), prefix + (isLeft ? "│   " : "    "), true);
+            printTreeHelper(node->getRight(), prefix + (isLeft ? "│   " : "    "), false);
+        }
+    }
 
 public:
     // ==================== CORE OPERATIONS ====================
@@ -320,7 +418,11 @@ public:
      * @param other Árbol a copiar
      * @complexity O(n)
      */
-    BST(const BST &other);
+    BST(const BST &other)
+    {
+        root = copyHelper(other.root); // Copiar el otro árbol
+        sz = other.sz;                 // Actualizar el tamaño
+    }
 
     /**
      * @brief Operador de asignación
@@ -328,13 +430,25 @@ public:
      * @return Referencia al árbol actual
      * @complexity O(n)
      */
-    BST &operator=(const BST &other);
+    BST &operator=(const BST &other)
+    {
+        if (this != &other)
+        {
+            clear();                       // Limpiar el árbol actual
+            root = copyHelper(other.root); // Copiar el otro árbol
+            sz = other.sz;                 // Actualizar el tamaño
+        }
+        return *this;
+    }
 
     /**
      * @brief Destructor - Libera toda la memoria
      * @complexity O(n)
      */
-    ~BST();
+    ~BST()
+    {
+        clear(); // Usar el método clear para liberar memoria
+    }
 
     /**
      * @brief Inserta un nuevo par Key-Value en el árbol
@@ -402,8 +516,10 @@ public:
      *
      * Imprime los pares Key-Value ordenados por clave ascendente
      */
-    void inorder() const { 
-        if( empty() ) return;
+    void inorder() const
+    {
+        if (empty())
+            return;
         inorderHelper(root);
     }
 
@@ -413,7 +529,12 @@ public:
      *
      * Útil para copiar el árbol o serialización
      */
-    void preorder() const;
+    void preorder() const
+    {
+        if (empty())
+            return;
+        preorderHelper(root);
+    }
 
     /**
      * @brief Recorrido Postorden (Izquierda-Derecha-Raíz)
@@ -421,7 +542,12 @@ public:
      *
      * Útil para eliminar el árbol o evaluación de expresiones
      */
-    void postorder() const;
+    void postorder() const
+    {
+        if (empty())
+            return;
+        postorderHelper(root);
+    }
 
     /**
      * @brief Recorrido por niveles (Breadth-First)
@@ -429,7 +555,31 @@ public:
      *
      * Visita todos los nodos nivel por nivel
      */
-    void levelOrder() const;
+    void levelOrder() const
+    {
+        if (empty())
+            return;
+
+        std::queue<Node *> q;
+        q.push(root);
+
+        while (!q.empty())
+        {
+            Node *current = q.front();
+            q.pop();
+
+            std::cout << current->getKey() << ": " << current->getValue() << std::endl;
+
+            if (current->hasLeft())
+            {
+                q.push(current->getLeft());
+            }
+            if (current->hasRight())
+            {
+                q.push(current->getRight());
+            }
+        }
+    }
 
     // ==================== HELPER OPERATIONS ====================
 
@@ -439,10 +589,13 @@ public:
      * @throw std::runtime_error si el árbol está vacío
      * @complexity O(log n) en promedio, O(n) en el peor caso
      */
-    const Key &findMinimum() const {
-        if ( empty() ) throw std::runtime_error("Árbol vacío - no hay mínimo");
-        Node *minNode = findMinHelper(root);
-        return minNode->getKey();
+    const Key &findMin() const
+    {
+        if (root == nullptr)
+        {
+            throw runtime_error("El árbol está vacío");
+        }
+        return findMinHelper(root)->getKey();
     }
 
     /**
@@ -451,7 +604,14 @@ public:
      * @throw std::runtime_error si el árbol está vacío
      * @complexity O(log n) en promedio, O(n) en el peor caso
      */
-    const Key &findMaximum() const;
+    const Key &findMaximum() const
+    {
+        if (root == nullptr)
+        {
+            throw runtime_error("El árbol está vacío");
+        }
+        return findMaxHelper(root)->getKey();
+    }
 
     /**
      * @brief Calcula la altura del árbol
@@ -460,14 +620,17 @@ public:
      *
      * Un árbol vacío tiene altura -1, un árbol con solo raíz tiene altura 0
      */
-    int height() const;
+    int height() const
+    {
+        return heightHelper(root);
+    }
 
     /**
      * @brief Obtiene el número total de nodos
      * @return Número de nodos en el árbol
      * @complexity O(1)
      */
-    unsigned int size() const;
+    unsigned int size() const { return sz; }
 
     /**
      * @brief Verifica si el árbol está vacío
@@ -482,7 +645,12 @@ public:
      *
      * Libera toda la memoria y deja el árbol vacío
      */
-    void clear();
+    void clear()
+    {
+        clearHelper(root);
+        root = nullptr;
+        sz = 0;
+    }
 
     // ==================== ADDITIONAL USEFUL OPERATIONS ====================
 
@@ -495,7 +663,40 @@ public:
      *
      * El sucesor es la menor clave mayor que la clave dada
      */
-    const Key &findSuccessor(const Key &k) const;
+    const Key &findSuccessor(const Key &k) const
+    {
+        Node *current = root;
+        Node *successor = nullptr;
+
+        while (current != nullptr)
+        {
+            if (k < current->getKey())
+            {
+                successor = current; // Posible sucesor
+                current = current->getLeft();
+            }
+            else if (k > current->getKey())
+            {
+                current = current->getRight();
+            }
+            else
+            {
+                // Nodo encontrado
+                if (current->hasRight())
+                {
+                    // El sucesor es el mínimo del subárbol derecho
+                    return findMinHelper(current->getRight())->getKey();
+                }
+                break;
+            }
+        }
+
+        if (successor == nullptr)
+        {
+            throw runtime_error("No existe sucesor para la clave dada");
+        }
+        return successor->getKey();
+    }
 
     /**
      * @brief Encuentra el predecesor de una clave (anterior en orden)
@@ -506,7 +707,40 @@ public:
      *
      * El predecesor es la mayor clave menor que la clave dada
      */
-    const Key &findPredecessor(const Key &k) const;
+    const Key &findPredecessor(const Key &k) const
+    {
+        Node *current = root;
+        Node *predecessor = nullptr;
+
+        while (current != nullptr)
+        {
+            if (k > current->getKey())
+            {
+                predecessor = current; // Posible predecesor
+                current = current->getRight();
+            }
+            else if (k < current->getKey())
+            {
+                current = current->getLeft();
+            }
+            else
+            {
+                // Nodo encontrado
+                if (current->hasLeft())
+                {
+                    // El predecesor es el máximo del subárbol izquierdo
+                    return findMaxHelper(current->getLeft())->getKey();
+                }
+                break;
+            }
+        }
+
+        if (predecessor == nullptr)
+        {
+            throw runtime_error("No existe predecesor para la clave dada");
+        }
+        return predecessor->getKey();
+    }
 
     /**
      * @brief Imprime una representación visual del árbol
@@ -514,7 +748,10 @@ public:
      *
      * Muestra la estructura del árbol de forma jerárquica
      */
-    void printTree() const;
+    void printTree() const
+    {
+        printTreeHelper(root, "", false);
+    }
 };
 #endif __BST__
 
