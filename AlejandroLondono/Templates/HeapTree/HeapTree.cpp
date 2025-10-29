@@ -10,9 +10,9 @@ class HeapTree
 private:
     vector<pair<Priority, Value>> heap;
 
-    int left(int i) const { return 2 * i + 1; }
-    int right(int i) const { return 2 * i + 2; }
-    int parent(int i) const { return (i - 1) / 2; }
+   unsigned int left(unigned int i) const { return 2 * i + 1; }
+   unsigned int right(unsigned int i) const { return 2 * i + 2; }
+   unsigned int parent(unsigned int i) const { return (i - 1) / 2; }
 
     int size() const { return (int)heap.size(); }
 
