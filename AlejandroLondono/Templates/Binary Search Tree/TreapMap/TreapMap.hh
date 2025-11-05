@@ -7,42 +7,21 @@
 #include <queue>
 
 using namespace std;
-/**
- * @class BST
- * @brief Árbol Binario de Búsqueda con pares Key-Value
- * @tparam Key Tipo de dato para la clave (debe ser comparable)
- * @tparam Value Tipo de dato para el valor
- *
- * Implementa todas las operaciones estándar de un BST donde:
- * - La Key es única y determina la posición en el árbol
- * - El Value puede repetirse y se asocia a cada Key
- * - Las operaciones de búsqueda y ordenamiento se basan en la Key
- */
+
 template <typename Key, typename Value>
 class TreapMap
 {
 private:
-    /**
-     * @class Node
-     * @brief Representa un nodo del árbol con par Key-Value
-     *
-     * Encapsula la información de cada nodo: clave única, valor asociado,
-     * y punteros a los hijos izquierdo y derecho.
-     */
     class Node
     {
     private:
-        Key key;     ///< Clave única del nodo (usada para ordenar)
-        Value value; ///< Valor asociado a la clave
-        int priority; ///< Puntero al hijo izquierdo
-        Node *right, *left; ///< Puntero al hijo derecho
+        Key key;     
+        Value value; 
+        int priority; 
+        Node *right, *left; 
 
     public:
-        /**
-         * @brief Constructor del nodo
-         * @param k Clave del nodo
-         * @param v Valor asociado a la clave
-         */
+
         Node(const Key &k, const Value &v) : key(k), value(v), priority(rand()), left(nullptr), right(nullptr) {}
         
         Key &getKey() { return key; }
@@ -68,8 +47,8 @@ private:
         bool hasRight() const { return right != nullptr; }
     };
 
-    Node *root;      ///< Raíz del árbol
-    unsigned int sz; ///< Número de nodos en el árbol
+    Node *root;   
+    unsigned int sz;
 
     // ==================== MÉTODOS AUXILIARES PRIVADOS ====================
 
@@ -89,13 +68,7 @@ private:
         newRoot->setLeft(node);
         return newRoot;
     }
-    /**
-     * @brief Inserta un nodo recursivamente
-     * @param node Nodo actual en la recursión
-     * @param k Clave a insertar
-     * @param v Valor asociado a la clave
-     * @return Puntero al nodo actualizado
-     */
+
     Node* insertHelper(Node *node, const Key &k, const Value &v)
     {
       if (node == nullptr) {
@@ -104,9 +77,9 @@ private:
     }
 
     if (k < node->getKey())
-        node->setLeft(insertHelper(node->getLeft(), k, v));  // ← ASIGNAR resultado
+        node->setLeft(insertHelper(node->getLeft(), k, v));
     else if (k > node->getKey())
-        node->setRight(insertHelper(node->getRight(), k, v));  // ← ASIGNAR resultado
+        node->setRight(insertHelper(node->getRight(), k, v));
     else {
         node->setValue(v);  // Actualizar valor si la clave existe
         return node;
@@ -120,12 +93,6 @@ private:
     return node;
 }
 
-    /**
-     * @brief Busca un nodo por su clave recursivamente
-     * @param node Nodo actual en la recursión
-     * @param k Clave a buscar
-     * @return Puntero al nodo encontrado o nullptr
-     */
     const Value* findHelper(Node *node, const Key &k) const
     {
         if (node == nullptr)
