@@ -5,7 +5,7 @@
 using namespace std;
 
 template <typename Priority, typename Value>
-class HeapTree
+class Heap
 {
 private:
     vector<pair<Priority, Value>> heap;
@@ -13,8 +13,6 @@ private:
     int left(int i) const { return 2 * i + 1; }
     int right(int i) const { return 2 * i + 2; }
     int parent(int i) const { return (i - 1) / 2; }
-
-    int size() const { return (int)heap.size(); }
 
     void heapifyUp(int i)
     {
@@ -44,7 +42,9 @@ private:
     }
 
 public:
-    HeapTree() {}
+    int size() const { return heap.size(); }
+
+    Heap() {}
 
     void insert(const Priority &p, const Value &v)
     {
@@ -55,7 +55,7 @@ public:
     pair<Priority, Value> extractMax()
     {
         if (size() == 0)
-            throw runtime_error("HeapTree is empty");
+            throw runtime_error("Heap is empty");
 
         pair<Priority, Value> maxElem = heap[0];
         heap[0] = heap.back();
@@ -73,11 +73,18 @@ public:
             cout << "(" << p.first << ", " << p.second << ") ";
         cout << "\n";
     }
+
+    const pair<Priority, Value>& getMax() const {
+    if (heap.empty())
+        throw runtime_error("Heap is empty");
+    return heap[0];
+}
+
 };
 
 int main()
 {
-    HeapTree<int, string> heap;
+    Heap<int, string> heap;
 
     heap.insert(10, "A");
     heap.insert(4, "B");

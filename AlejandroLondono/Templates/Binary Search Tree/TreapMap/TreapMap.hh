@@ -1,5 +1,5 @@
-#ifndef __BST__
-#define __BST__
+#ifndef __TreapMap__
+#define __TreapMap__
 
 #include <iostream>
 #include <stdexcept>
@@ -19,7 +19,7 @@ using namespace std;
  * - Las operaciones de búsqueda y ordenamiento se basan en la Key
  */
 template <typename Key, typename Value>
-class BST
+class TreapMap
 {
 private:
     /**
@@ -34,8 +34,8 @@ private:
     private:
         Key key;     ///< Clave única del nodo (usada para ordenar)
         Value value; ///< Valor asociado a la clave
-        Node *left;  ///< Puntero al hijo izquierdo
-        Node *right; ///< Puntero al hijo derecho
+        int priority; ///< Puntero al hijo izquierdo
+        Node *right, *left; ///< Puntero al hijo derecho
 
     public:
         /**
@@ -43,60 +43,28 @@ private:
          * @param k Clave del nodo
          * @param v Valor asociado a la clave
          */
-        Node(const Key &k, const Value &v) : key(k), value(v), left(nullptr), right(nullptr) {}
-
-        /**
-         * @brief Obtiene la clave del nodo
-         * @return Referencia constante a la clave
-         */
-        const Key &getKey() const { return key; }
-
-        /**
-         * @brief Obtiene el valor del nodo
-         * @return Referencia constante al valor
-         */
+        Node(const Key &k, const Value &v) : key(k), value(v), priority(rand()), left(nullptr), right(nullptr) {}
+        
+        Key &getKey() { return key; }
+        
         const Value &getValue() const { return value; }
-
-        /**
-         * @brief Obtiene el puntero al hijo izquierdo
-         * @return Puntero al nodo izquierdo
-         */
+    
         Node *getLeft() const { return left; }
-
-        /**
-         * @brief Obtiene el puntero al hijo derecho
-         * @return Puntero al nodo derecho
-         */
+     
         Node *getRight() const { return right; }
-
-        /**
-         * @brief Establece el hijo izquierdo
-         * @param n Puntero al nuevo nodo izquierdo
-         */
+      
         void setLeft(Node *n) { left = n; }
-
-        /**
-         * @brief Establece el hijo derecho
-         * @param n Puntero al nuevo nodo derecho
-         */
+       
         void setRight(Node *n) { right = n; }
 
-        /**
-         * @brief Actualiza el valor del nodo
-         * @param v Nuevo valor
-         */
-        void setValue(const Value &v) { value = v; }
+        void setPriority(int p) { priority = p; }
 
-        /**
-         * @brief Verifica si tiene hijo izquierdo
-         * @return true si tiene hijo izquierdo, false en caso contrario
-         */
+        int getPriority() const { return priority; }
+       
+        void setValue(const Value &v) { value = v; }
+        
         bool hasLeft() const { return left != nullptr; }
 
-        /**
-         * @brief Verifica si tiene hijo derecho
-         * @return true si tiene hijo derecho, false en caso contrario
-         */
         bool hasRight() const { return right != nullptr; }
     };
 
@@ -105,6 +73,22 @@ private:
 
     // ==================== MÉTODOS AUXILIARES PRIVADOS ====================
 
+
+    Node *rotateRight(Node *node)
+    {
+        Node *newRoot = node->getLeft();
+        node->setLeft(newRoot->getRight());
+        newRoot->setRight(node);
+        return newRoot;   //antes tenia node = newRoot;  con Node *rotateRight(Node *&node) entonces pasaba por referencia y cambiaba el puntero original pero mas peligroso
+    }
+
+    Node *rotateLeft(Node *node)
+    {
+        Node *newRoot = node->getRight();
+        node->setRight(newRoot->getLeft());
+        newRoot->setLeft(node);
+        return newRoot;
+    }
     /**
      * @brief Inserta un nodo recursivamente
      * @param node Nodo actual en la recursión
@@ -112,49 +96,29 @@ private:
      * @param v Valor asociado a la clave
      * @return Puntero al nodo actualizado
      */
-    void insertHelper(Node *node, const Key &k, const Value &v)
+    Node* insertHelper(Node *node, const Key &k, const Value &v)
     {
-        // Si la clave a insertar es menor que la del nodo actual,
-        // intentamos insertarla en el subárbol izquierdo.
-        if (k < node->getKey())
-        {
-            // Si el nodo izquierdo existe, seguimos descendiendo por la izquierda.
-            if (node->hasLeft())
-            {
-                insertHelper(node->getLeft(), k, v);
-            }
-            // Si el nodo izquierdo NO existe, creamos uno nuevo en esa posición.
-            else
-            {
-                Node *newNode = new Node(k, v);
-                node->setLeft(newNode);
-                sz++; // Aumentamos el contador de nodos (solo si se crea uno nuevo).
-            }
-        }
-        // Si la clave a insertar es mayor que la del nodo actual,
-        // intentamos insertarla en el subárbol derecho.
-        else if (k > node->getKey())
-        {
-            // Si el nodo derecho existe, seguimos descendiendo por la derecha.
-            if (node->hasRight())
-            {
-                insertHelper(node->getRight(), k, v);
-            }
-            // Si el nodo derecho NO existe, creamos uno nuevo en esa posición.
-            else
-            {
-                Node *newNode = new Node(k, v);
-                node->setRight(newNode);
-                sz++; // Aumentamos el contador de nodos.
-            }
-        }
-        // Si la clave YA existe en el árbol (igual a la del nodo actual),
-        // simplemente actualizamos el valor asociado.
-        else
-        {
-            node->setValue(v);
-        }
+      if (node == nullptr) {
+          sz++;
+          return new Node(k, v);
     }
+
+    if (k < node->getKey())
+        node->setLeft(insertHelper(node->getLeft(), k, v));  // ← ASIGNAR resultado
+    else if (k > node->getKey())
+        node->setRight(insertHelper(node->getRight(), k, v));  // ← ASIGNAR resultado
+    else {
+        node->setValue(v);  // Actualizar valor si la clave existe
+        return node;
+    }
+
+    if (node->getLeft() && node->getLeft()->getPriority() > node->getPriority())
+        node = rotateRight(node);
+    else if (node->getRight() && node->getRight()->getPriority() > node->getPriority())
+        node = rotateLeft(node);
+
+    return node;
+}
 
     /**
      * @brief Busca un nodo por su clave recursivamente
@@ -162,15 +126,14 @@ private:
      * @param k Clave a buscar
      * @return Puntero al nodo encontrado o nullptr
      */
-    bool findHelper(Node *node, const Key &k) const
+    const Value* findHelper(Node *node, const Key &k) const
     {
         if (node == nullptr)
-        {
-            return false;
-        }
+            return nullptr;
+
         if (k == node->getKey())
         {
-            return true;
+            return &(node->getValue());
         }
         else if (k < node->getKey())
         {
@@ -225,13 +188,13 @@ private:
 
             else
             {
-                // Caso 3: dos hijos
-                Node *successor = findMinHelper(node->getRight());                   // el sucesor inorden es el minimo del subarbol derecho
-                Node *newNode = new Node(successor->getKey(), successor->getValue());
-                newNode->setLeft(node->getLeft());
-                newNode->setRight(removeHelper(node->getRight(), successor->getKey())); // eliminamos el sucesor inorden del subarbol derecho
-                delete node;
-                return newNode;
+               if(node->getLeft()->getPriority() > node->getRight()->getPriority()) {
+                   node = rotateRight(node);
+                   node->setRight(removeHelper(node->getRight(), k));
+               } else {
+                   node = rotateLeft(node);
+                   node->setLeft(removeHelper(node->getLeft(), k));
+               }
             }
         }
         return node;
@@ -411,14 +374,14 @@ public:
      * @brief Constructor por defecto - Crea un BST vacío
      * @complexity O(1)
      */
-    BST() : root(nullptr), sz(0) {}
+    TreapMap() : root(nullptr), sz(0) {}
 
     /**
      * @brief Constructor de copia
      * @param other Árbol a copiar
      * @complexity O(n)
      */
-    BST(const BST &other)
+    TreapMap(const TreapMap &other)
     {
         root = copyHelper(other.root); // Copiar el otro árbol
         sz = other.sz;                 // Actualizar el tamaño
@@ -430,7 +393,7 @@ public:
      * @return Referencia al árbol actual
      * @complexity O(n)
      */
-    BST &operator=(const BST &other)
+    TreapMap &operator=(const TreapMap &other)
     {
         if (this != &other)
         {
@@ -445,7 +408,7 @@ public:
      * @brief Destructor - Libera toda la memoria
      * @complexity O(n)
      */
-    ~BST()
+    ~TreapMap()
     {
         clear(); // Usar el método clear para liberar memoria
     }
@@ -468,7 +431,7 @@ public:
         }
         else
         {
-            insertHelper(root, k, v);
+           root = insertHelper(root, k, v);
         }
     }
     /**
@@ -477,11 +440,11 @@ public:
      * @return Puntero al valor asociado, nullptr si no existe
      * @complexity O(log n) en promedio, O(n) en el peor caso
      */
-    bool find(const Key &k) const
+    const Value* find(const Key &k) const
     {
         if (empty())
         {
-            return false;
+            return nullptr;
         }
         return findHelper(root, k);
     }
@@ -499,7 +462,7 @@ public:
      */
     bool remove(const Key &k)
     {
-        if (!find(k))
+        if (find(k) == nullptr)
         {
             return false; // Key not found
         }
@@ -753,19 +716,4 @@ public:
         printTreeHelper(root, "", false);
     }
 };
-#endif __BST__
-
-/*  PENDIENTES DE IMPLEMENTAR:
-  • remove(k)
-  • preorder()
-  • postorder()
-  • levelOrder()
-  • findMinimum() / findMaximum()
-  • height()
-  • clear()
-  • findSuccessor() / findPredecessor()
-  • printTree()
-  • Constructor de copia
-  • Operador de asignación
-  • Destructor
-*/
+#endif _TreapMap_
