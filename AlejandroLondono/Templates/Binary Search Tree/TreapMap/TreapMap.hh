@@ -17,7 +17,7 @@ private:
     private:
         Key key;     
         Value value; 
-        int priority; 
+        double priority; 
         Node *right, *left; 
 
     public:
@@ -38,7 +38,7 @@ private:
 
         void setPriority(int p) { priority = p; }
 
-        int getPriority() const { return priority; }
+        double getPriority() const { return priority; }
        
         void setValue(const Value &v) { value = v; }
         
