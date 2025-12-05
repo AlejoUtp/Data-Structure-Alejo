@@ -203,7 +203,7 @@ private:
             // Nodo encontrado, empezamos con verificar si es nodo hoja, un solo hijo o dos hijos y realizamos la eliminacion y reasignacion
             if (!node->hasLeft() && !node->hasRight())
             {
-                // Caso 2: solo hijo izquierdo
+                // Caso 1: nodo hoja
                 delete node;
                 return nullptr;
             }

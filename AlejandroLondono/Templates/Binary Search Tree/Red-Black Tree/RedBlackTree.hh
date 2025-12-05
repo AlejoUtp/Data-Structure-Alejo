@@ -1,7 +1,7 @@
 /**
  * @file RedBlackTree.h
  * @brief Implementación de un Árbol Rojo-Negro (Red-Black Tree) con pares Key-Value
- * @author Tu Nombre
+ * @author Alejandro 
  * @date 2025
  *
  * Este archivo contiene la estructura completa de un Red-Black Tree autobalanceado.
@@ -228,31 +228,59 @@ private:
      * También maneja casos simétricos (cuando padre es hijo derecho).
      */
 
-    void insertFixup(Node *z);
+    void insertFixup(Node* z) {
+    while (z->getParent()->isRed()) {
 
-    /**
-     * @brief Corrige las propiedades RBT después de una eliminación
-     * @param x Nodo que reemplazó al eliminado
-     * @complexity O(log n)
-     *
-     * Maneja 4 casos cuando x es NEGRO (doble negro):
-     * CASO 1: Hermano es ROJO
-     *   - Rotar y recolorear para hacer hermano NEGRO
-     *
-     * CASO 2: Hermano es NEGRO y ambos sobrinos son NEGROS
-     *   - Recolorear hermano a ROJO
-     *   - Subir el problema
-     *
-     * CASO 3: Hermano es NEGRO, sobrino izquierdo ROJO, derecho NEGRO
-     *   - Rotar hermano y recolorear
-     *   - Convertir a CASO 4
-     *
-     * CASO 4: Hermano es NEGRO y sobrino derecho es ROJO
-     *   - Rotar padre y recolorear
-     *   - Problema resuelto
-     *
-     * También maneja casos simétricos.
-     */
+        if (z->getParent() == z->getParent()->getParent()->getLeft()) {
+            Node* y = z->getParent()->getParent()->getRight(); // tío
+
+            // Caso 1: El tío es rojo
+            if (y->isRed()) {
+                z->getParent()->setColor(BLACK);
+                y->setColor(BLACK);
+                z->getParent()->getParent()->setColor(RED);
+                z = z->getParent()->getParent();
+            }
+
+            // Caso 2 y 3: El tío es negro
+            else {
+                // Caso 2: rotación izquierda sobre el padre
+                if (z == z->getParent()->getRight()) {
+                    z = z->getParent();
+                    rotateLeft(z);
+                }
+
+                // Caso 3: rotación derecha sobre el abuelo
+                z->getParent()->setColor(BLACK);
+                z->getParent()->getParent()->setColor(RED);
+                rotateRight(z->getParent()->getParent());
+            }
+        }
+        else {
+            // Mismo caso que arriba, pero invertido left/right
+            Node* y = z->getParent()->getParent()->getLeft(); // tío
+
+            if (y->isRed()) {
+                z->getParent()->setColor(BLACK);
+                y->setColor(BLACK);
+                z->getParent()->getParent()->setColor(RED);
+                z = z->getParent()->getParent();
+            }
+            else {
+                if (z == z->getParent()->getLeft()) {
+                    z = z->getParent();
+                    rotateRight(z);
+                }
+
+                z->getParent()->setColor(BLACK);
+                z->getParent()->getParent()->setColor(RED);
+                rotateLeft(z->getParent()->getParent());
+            }
+        }
+    }
+    root->setColor(BLACK);
+}
+
     void deleteFixup(Node *x);
 
     /**

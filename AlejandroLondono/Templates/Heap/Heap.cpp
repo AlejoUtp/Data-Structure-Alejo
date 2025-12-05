@@ -44,7 +44,6 @@ private:
     }
 
 public:
-    int size() const { return heap.size(); }
 
     Heap() {}
 
@@ -86,12 +85,15 @@ public:
 
 int main()
 {
-    Heap<int, string> heap;
+    Heap<int, int> heap;
 
-    heap.insert(10, "A");
-    heap.insert(4, "B");
-    heap.insert(15, "C");
-    heap.insert(7, "D");
+    heap.insert(10, 1);
+    heap.insert(4, 2);
+    heap.insert(15, 3);
+    heap.insert(7, 4);
+    heap.insert(20, 5);
+    heap.insert(11, 2);
+
 
     cout << "Heap actual: ";
     heap.printHeap();
